@@ -23,7 +23,7 @@ async function shot(name, { width, height, mobile = false, fullPage = false }, a
   const page = await ctx.newPage();
   await page.goto(BASE, { waitUntil: 'networkidle' });
   if (action) await action(page);
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(2500); // let the load + zoom animations settle
   await page.screenshot({ path: OUT + name, fullPage });
   console.log('saved', OUT + name);
   await ctx.close();

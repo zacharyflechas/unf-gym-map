@@ -14,6 +14,13 @@ An interactive, mobile-friendly gym floor map for students. Tap a machine to see
 - A machine list under the map for big, easy tap targets on phones. On narrow screens the map scrolls sideways.
 - Deep links: the URL hash holds the open machine (e.g. `…/#leg-press`). You could print these as QR codes and stick them on the real machines.
 - No backend: it builds to a static site.
+- Motion, all in plain CSS (transform/opacity only, no animation library):
+  - **Load sequence:** the zones fade in, then markers pop in one after another.
+  - **Search matches:** a soft gold glow pulses around them. The glow is a radial gradient, not an animated blur filter.
+  - **Zoom on tap:** the map zooms and pans toward the tapped machine and zooms back out when the panel closes. This is a CSS transform tween on a wrapper, so the horizontal scroll and tap targets still work. On phones the page also scrolls so the zoomed map shows above the bottom sheet.
+  - **Panel:** the drawer (desktop) or bottom sheet (phone) springs in using CSS `linear()` spring easing, with a cubic-bezier fallback for older browsers. The backdrop fades.
+  - **Hover lift:** on desktop, markers lift and tilt on hover. This only applies under `@media (hover: hover) and (pointer: fine)`.
+  - **Reduced motion:** with `prefers-reduced-motion: reduce`, all of the above is turned off and the map doesn't zoom.
 
 ## Run locally
 
@@ -81,6 +88,7 @@ For a user/org site (`<user>.github.io`) or a custom domain, `'/'` also works.
 ## Screenshots
 
 `npm run screenshots` uses `playwright-core` with a locally installed Chrome (`CHROME_PATH`, default `/usr/bin/google-chrome`). It expects `npm run preview` to be running on port 4173. Output goes to [`screenshots/`](screenshots/).
+`npm run demo` records demo videos (`screenshots/demo-desktop.webm` and `screenshots/demo-mobile.webm`, which git ignores). It needs Playwright's ffmpeg, installed once with `npx playwright-core install ffmpeg`.
 
 ## Stack
 

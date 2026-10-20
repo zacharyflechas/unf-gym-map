@@ -38,9 +38,12 @@ export default function GymMap({ machines, matchedIds, filtering, selectedId, on
           <rect width="40" height="40" fill="#F7F9FB" />
           <path d="M40 0H0V40" fill="none" stroke="#E4E9EE" strokeWidth="1" />
         </pattern>
-        <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#0b2545" floodOpacity="0.25" />
-        </filter>
+        {/* Pre-baked soft glow (radial gradient) — animating its opacity/scale is far cheaper than animating a blur filter. */}
+        <radialGradient id="glow">
+          <stop offset="45%" stopColor="#F2B705" stopOpacity="0.85" />
+          <stop offset="70%" stopColor="#F2B705" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#F2B705" stopOpacity="0" />
+        </radialGradient>
       </defs>
 
       {/* floor + walls */}
@@ -54,8 +57,8 @@ export default function GymMap({ machines, matchedIds, filtering, selectedId, on
       </text>
 
       {/* zones */}
-      {ZONES.map((z) => (
-        <g key={z.id}>
+      {ZONES.map((z, i) => (
+        <g key={z.id} className="zone-group" style={{ '--i': i }}>
           <rect x={z.x} y={z.y} width={z.width} height={z.height} rx="14" fill={z.color} className="zone" />
           <text x={z.x + 14} y={z.y + 26} className="zone-label">
             {z.name.toUpperCase()}
@@ -64,12 +67,14 @@ export default function GymMap({ machines, matchedIds, filtering, selectedId, on
       ))}
 
       {/* footprints */}
-      {machines.map((m) => (
-        <Footprint key={`fp-${m.id}`} machine={m} />
+      {machines.map((m, i) => (
+        <g key={`fp-${m.id}`} className="footprint-group" style={{ '--i': i }}>
+          <Footprint machine={m} />
+        </g>
       ))}
 
       {/* markers */}
-      {machines.map((m) => {
+      {machines.map((m, i) => {
         const matched = matchedIds.has(m.id);
         const state = filtering ? (matched ? 'is-match' : 'is-dim') : '';
         const isSel = m.id === selectedId;
@@ -78,6 +83,7 @@ export default function GymMap({ machines, matchedIds, filtering, selectedId, on
             key={m.id}
             className={`marker ${state} ${isSel ? 'is-selected' : ''}`}
             transform={`translate(${m.x} ${m.y})`}
+            style={{ '--i': i }}
             role="button"
             tabIndex={0}
             aria-label={`${m.name}${filtering && matched ? ' (matches filter)' : ''}`}
@@ -89,12 +95,18 @@ export default function GymMap({ machines, matchedIds, filtering, selectedId, on
               }
             }}
           >
-            {filtering && matched && <circle r={R + 10} className="pulse" />}
-            <circle r={R + 14} className="hit" />
-            <circle r={R} className="marker-dot" filter="url(#shadow)" />
-            <text className="marker-short" textAnchor="middle" dy="0.35em">
-              {m.short}
-            </text>
+            {filtering && matched && <circle r={R + 22} className="glow" fill="url(#glow)" />}
+            <g className="marker-pop">
+              <ellipse className="lift-shadow" cx="0" cy={R - 4} rx={R - 6} ry="8" />
+              <g className="marker-lift">
+                <circle r={R + 14} className="hit" />
+                <circle r={R} className="marker-dot" />
+                <circle r={R - 9} className="marker-sheen" />
+                <text className="marker-short" textAnchor="middle" dy="0.35em">
+                  {m.short}
+                </text>
+              </g>
+            </g>
             <text className="marker-name" textAnchor="middle" y={R + 20}>
               {m.name}
             </text>

@@ -108,7 +108,9 @@ button { font: inherit; cursor: pointer; }
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 .map-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; }
-.gym-map { display: block; width: 100%; min-width: 640px; height: auto; user-select: none; }
+.map-stage { position: relative; min-width: 640px; overflow: hidden; border-radius: 10px; }
+.map-zoom { transform-origin: 0 0; }
+.gym-map { display: block; width: 100%; height: auto; user-select: none; -webkit-tap-highlight-color: transparent; }
 .map-hint { display: none; margin: 6px 4px 0; font-size: 0.8rem; color: var(--gray); }
 
 .wall { fill: none; stroke: var(--navy-dark); stroke-width: 8; }
@@ -118,9 +120,11 @@ button { font: inherit; cursor: pointer; }
 .footprint { fill: #fff; stroke: #c4ced8; stroke-width: 2; }
 .bar { stroke: var(--gray); stroke-width: 5; stroke-linecap: round; }
 
-.marker { cursor: pointer; outline: none; transition: opacity 0.2s; }
+.marker { cursor: pointer; outline: none; }
 .marker .hit { fill: transparent; }
-.marker-dot { fill: var(--navy); stroke: #fff; stroke-width: 3; transition: fill 0.15s; }
+.marker-dot { fill: var(--navy); stroke: #fff; stroke-width: 3; }
+.marker-sheen { fill: #fff; opacity: 0.08; pointer-events: none; }
+.lift-shadow { fill: #0b2545; opacity: 0.18; }
 .marker-short { fill: #fff; font-size: 18px; font-weight: 800; pointer-events: none; }
 .marker-name {
   fill: var(--text);
@@ -132,25 +136,11 @@ button { font: inherit; cursor: pointer; }
   stroke-linejoin: round;
   pointer-events: none;
 }
-.marker:hover .marker-dot, .marker:focus-visible .marker-dot { fill: var(--navy-dark); }
 .marker:focus-visible .marker-dot { stroke: var(--accent); stroke-width: 5; }
-.marker.is-dim { opacity: 0.22; }
-.marker.is-match .marker-dot { fill: var(--navy); stroke: var(--accent); stroke-width: 6; }
+.marker.is-match .marker-dot { stroke: var(--accent); stroke-width: 6; }
 .marker.is-selected .marker-dot { fill: var(--accent); stroke: var(--navy); stroke-width: 5; }
 .marker.is-selected .marker-short { fill: var(--navy-dark); }
-.pulse {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 4;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: pulse 1.6s ease-out infinite;
-}
-@keyframes pulse {
-  0% { opacity: 0.9; transform: scale(0.8); }
-  100% { opacity: 0; transform: scale(1.35); }
-}
-@media (prefers-reduced-motion: reduce) { .pulse { animation: none; opacity: 0.8; } }
+.glow { pointer-events: none; }
 
 /* ---------- list ---------- */
 .list-card {
@@ -204,22 +194,17 @@ button { font: inherit; cursor: pointer; }
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 30, 60, 0.45);
   z-index: 50;
   display: flex;
   justify-content: flex-end;
-  animation: fade 0.15s ease-out;
 }
-@keyframes fade { from { opacity: 0; } }
 .detail {
   background: #fff;
   width: min(460px, 100%);
   height: 100%;
   overflow-y: auto;
   box-shadow: -6px 0 24px rgba(0, 0, 0, 0.2);
-  animation: slide-in 0.2s ease-out;
 }
-@keyframes slide-in { from { transform: translateX(40px); opacity: 0.5; } }
 .sheet-handle { display: none; }
 .detail-header {
   position: sticky;
@@ -293,13 +278,11 @@ button { font: inherit; cursor: pointer; }
   .overlay { align-items: flex-end; }
   .detail {
     height: auto;
-    max-height: 92vh;
+    max-height: 68vh;
     position: relative;
     border-radius: 18px 18px 0 0;
-    animation: slide-up 0.22s ease-out;
     padding-bottom: env(safe-area-inset-bottom);
   }
-  @keyframes slide-up { from { transform: translateY(60px); opacity: 0.5; } }
   .sheet-handle {
     display: block;
     width: 44px;
@@ -313,4 +296,127 @@ button { font: inherit; cursor: pointer; }
     z-index: 2;
   }
   .detail-header { border-radius: 18px 18px 0 0; padding-top: 20px; }
+}
+
+/* =====================================================================
+   MOTION — transform/opacity only (compositor-friendly, no layout work).
+   Everything here is switched off under prefers-reduced-motion below.
+   ===================================================================== */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Spring fallback (single overshoot) for browsers without linear() */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --pop: cubic-bezier(0.34, 1.7, 0.6, 1);
+}
+@supports (animation-timing-function: linear(0, 1)) {
+  :root {
+    /* Damped spring: overshoots ~4%, settles. Generated from a mass-spring curve. */
+    --ease-spring: linear(
+      0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017 19.8%,
+      1.067 23.4%, 1.077 25.4%, 1.075 28%, 1.038 34.8%, 1.003 42.2%, 0.99 47.3%,
+      0.995 60%, 1.001 72%, 1
+    );
+  }
+}
+
+/* 1. Load sequence: zones fade in, then footprints, then markers pop in one by one. */
+.zone-group { animation: zone-in 0.5s var(--ease-out) backwards; animation-delay: calc(var(--i) * 70ms); }
+@keyframes zone-in { from { opacity: 0; } }
+
+.footprint-group { animation: fade-in 0.4s ease-out backwards; animation-delay: calc(300ms + var(--i) * 40ms); }
+@keyframes fade-in { from { opacity: 0; } }
+
+.marker-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: marker-pop 0.55s var(--pop) backwards; /* 'backwards' only, so hover transforms work afterwards */
+  animation-delay: calc(420ms + var(--i) * 55ms);
+}
+@keyframes marker-pop {
+  from { opacity: 0; transform: scale(0.2); }
+  60% { opacity: 1; }
+}
+.marker-name { animation: fade-in 0.4s ease-out backwards; animation-delay: calc(560ms + var(--i) * 55ms); }
+
+/* Dimming non-matches on search */
+.marker { transition: opacity 0.25s ease; }
+.marker.is-dim { opacity: 0.22; }
+
+/* 2. Smooth glow pulse on search matches */
+.glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: glow 2s ease-in-out infinite;
+}
+@keyframes glow {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50% { opacity: 0.95; transform: scale(1.08); }
+}
+
+.marker-lift, .lift-shadow { transform-box: fill-box; transform-origin: center; }
+
+/* Selected marker: small confirming bounce */
+.marker.is-selected .marker-lift { animation: select-bounce 0.5s var(--pop); }
+@keyframes select-bounce { 0% { transform: scale(0.85); } 100% { transform: scale(1); } }
+
+/* 3. Zoom/pan toward the tapped machine (transform tween on a wrapper; tap targets scale with it). */
+.map-zoom { transition: transform 0.65s var(--ease-out); }
+.map-zoom.is-zoomed { transition-duration: 0.7s; }
+
+/* 4. Detail panel: backdrop fades, drawer (desktop) / sheet (mobile) springs in. */
+.overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 30, 60, 0.45);
+  animation: fade-in 0.25s ease-out;
+}
+.overlay.is-closing::before { animation: fade-out 0.26s ease-in forwards; }
+@keyframes fade-out { to { opacity: 0; } }
+.detail { position: relative; animation: drawer-in 0.6s var(--ease-spring); }
+.overlay.is-closing .detail { animation: drawer-out 0.26s cubic-bezier(0.4, 0, 1, 1) forwards; }
+@keyframes drawer-in { from { transform: translateX(100%); } }
+@keyframes drawer-out { to { transform: translateX(100%); } }
+.detail-body > * { animation: rise-in 0.45s var(--ease-out) backwards; }
+.detail-body > :nth-child(1) { animation-delay: 0.12s; }
+.detail-body > :nth-child(2) { animation-delay: 0.16s; }
+.detail-body > :nth-child(3) { animation-delay: 0.2s; }
+.detail-body > :nth-child(n + 4) { animation-delay: 0.24s; }
+@keyframes rise-in { from { opacity: 0; transform: translateY(10px); } }
+
+@media (max-width: 700px) {
+  .detail { animation-name: sheet-in; animation-duration: 0.65s; }
+  .overlay.is-closing .detail { animation-name: sheet-out; }
+  @keyframes sheet-in { from { transform: translateY(100%); } }
+  @keyframes sheet-out { to { transform: translateY(100%); } }
+}
+
+/* 5. Desktop-only hover lift + tilt (pointer devices). SVG children don't support real
+      perspective, so the "3D" feel comes from lift + slight rotate + a shadow that spreads. */
+@media (hover: hover) and (pointer: fine) {
+  .marker-lift,
+  .lift-shadow {
+    transition: transform 0.35s var(--pop), opacity 0.35s ease;
+  }
+  .marker:hover .marker-lift { transform: translateY(-6px) rotate(-6deg) scale(1.1); }
+  .marker:hover .lift-shadow { transform: translateY(6px) scale(1.15, 1.3); opacity: 0.28; }
+  .marker-dot { transition: fill 0.2s ease; }
+  .marker:hover .marker-dot { fill: var(--navy-dark); }
+  .marker.is-selected:hover .marker-dot { fill: var(--accent); }
+  .machine-row { transition: transform 0.2s var(--ease-out), border-color 0.2s; }
+  .machine-row:hover { transform: translateY(-2px); }
+}
+
+/* 6. Reduced motion: no movement; keep only instant state changes (and a static glow). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .glow { animation: none !important; opacity: 0.7; }
+  .map-zoom { transform: none !important; }
+  .marker:hover .marker-lift, .marker:hover .lift-shadow, .machine-row:hover { transform: none !important; }
 }

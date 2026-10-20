@@ -1,8 +1,33 @@
-import { useEffect, useMemo, useState } from 'react';
-import { MACHINES, MUSCLE_GROUPS } from './data/gymData.js';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { MACHINES, MUSCLE_GROUPS, MAP_WIDTH, MAP_HEIGHT } from './data/gymData.js';
 import { machineMatches, zoneName } from './matching.js';
 import GymMap from './components/GymMap.jsx';
 import MachineDetail from './components/MachineDetail.jsx';
+
+const ZOOM = 1.7; // how far the map zooms toward a tapped machine
+const MAP_VIEW_H = MAP_HEIGHT + 30; // must match the SVG viewBox height in GymMap
+const CLOSE_MS = 260; // keep in sync with the exit animation in styles.css
+
+const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+const isNarrow = () => window.matchMedia?.('(max-width: 700px)').matches;
+
+/**
+ * CSS transform that zooms the map toward a machine. Uses percentages of the map's own
+ * box so no layout measurement is needed; clamped so the map never pans past its edges.
+ */
+function zoomTransform(machine) {
+  if (!machine) return undefined;
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  // On desktop the drawer covers the right side, so aim the machine a bit left of center.
+  const targetX = isNarrow() ? 50 : 38;
+  const fx = (machine.x / MAP_WIDTH) * 100;
+  const fy = (machine.y / MAP_VIEW_H) * 100;
+  const tx = clamp(targetX - ZOOM * fx, 100 - 100 * ZOOM, 0);
+  // On phones only the top of the map peeks out above the bottom sheet, so aim higher.
+  const targetY = isNarrow() ? 24 : 45;
+  const ty = clamp(targetY - ZOOM * fy, 100 - 100 * ZOOM, 0);
+  return `translate(${tx.toFixed(2)}%, ${ty.toFixed(2)}%) scale(${ZOOM})`;
+}
 
 const idFromHash = () => {
   const id = decodeURIComponent(window.location.hash.replace(/^#/, ''));
@@ -13,6 +38,9 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [muscle, setMuscle] = useState(null);
   const [selectedId, setSelectedId] = useState(idFromHash);
+  const [closing, setClosing] = useState(false);
+  const scrollRef = useRef(null);
+  const closeTimer = useRef(null);
 
   // Keep selection in the URL hash so a machine can be linked / bookmarked (e.g. a QR code on the machine).
   useEffect(() => {
@@ -21,11 +49,23 @@ export default function App() {
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
-  const select = (id) => {
+  const select = useCallback((id) => {
+    clearTimeout(closeTimer.current);
+    setClosing(false);
     setSelectedId(id);
     const url = id ? `#${id}` : window.location.pathname + window.location.search;
     window.history.replaceState(null, '', url);
-  };
+  }, []);
+
+  // Play the exit animation (sheet/drawer out, map zooms back) before unmounting the panel.
+  const closePanel = useCallback(() => {
+    if (reducedMotion()) return select(null);
+    setClosing(true);
+    clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => select(null), CLOSE_MS);
+  }, [select]);
+
+  useEffect(() => () => clearTimeout(closeTimer.current), []);
 
   const filtering = query.trim() !== '' || muscle !== null;
   const matchedIds = useMemo(
@@ -34,6 +74,22 @@ export default function App() {
   );
   const selected = MACHINES.find((m) => m.id === selectedId) ?? null;
   const listed = MACHINES.filter((m) => matchedIds.has(m.id));
+  const zoomed = selected && !closing && !reducedMotion() ? selected : null;
+
+  // On phones: bring the map to the top of the page (it peeks out above the bottom sheet)
+  // and scroll it sideways so the tapped machine is in view.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!selected || !el || !isNarrow()) return;
+    const behavior = reducedMotion() ? 'auto' : 'smooth';
+    const banner = document.querySelector('.proto-banner')?.offsetHeight ?? 0;
+    const top = el.getBoundingClientRect().top + window.scrollY - banner - 8;
+    window.scrollTo({ top, behavior });
+    if (el.scrollWidth > el.clientWidth) {
+      const left = (selected.x / MAP_WIDTH) * el.scrollWidth - el.clientWidth / 2;
+      el.scrollTo({ left, behavior });
+    }
+  }, [selected]);
 
   return (
     <div className="app">
@@ -96,14 +152,18 @@ export default function App() {
         </section>
 
         <section className="map-card" aria-label="Gym floor map">
-          <div className="map-scroll">
-            <GymMap
-              machines={MACHINES}
-              matchedIds={matchedIds}
-              filtering={filtering}
-              selectedId={selectedId}
-              onSelect={select}
-            />
+          <div className="map-scroll" ref={scrollRef}>
+            <div className="map-stage">
+              <div className={`map-zoom ${zoomed ? 'is-zoomed' : ''}`} style={{ transform: zoomTransform(zoomed) }}>
+                <GymMap
+                  machines={MACHINES}
+                  matchedIds={matchedIds}
+                  filtering={filtering}
+                  selectedId={selectedId}
+                  onSelect={select}
+                />
+              </div>
+            </div>
           </div>
           <p className="map-hint">Swipe sideways to see the whole floor on small screens.</p>
         </section>
@@ -139,7 +199,7 @@ export default function App() {
         Student prototype · Not affiliated with or endorsed by UNF · Videos are third-party YouTube content.
       </footer>
 
-      {selected && <MachineDetail machine={selected} onClose={() => select(null)} />}
+      {selected && <MachineDetail machine={selected} closing={closing} onClose={closePanel} />}
     </div>
   );
 }

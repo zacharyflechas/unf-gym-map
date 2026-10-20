@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { zoneName } from '../matching.js';
 
-export default function MachineDetail({ machine, onClose }) {
+export default function MachineDetail({ machine, closing = false, onClose }) {
   const closeRef = useRef(null);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function MachineDetail({ machine, onClose }) {
   const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
 
   return (
-    <div className="overlay" onClick={onClose}>
+    <div className={`overlay ${closing ? 'is-closing' : ''}`} onClick={onClose}>
       <aside
         className="detail"
         role="dialog"
