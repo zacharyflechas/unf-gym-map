@@ -1,0 +1,107 @@
+/*
+ * DESIGN TOKENS: every color, size, radius and shadow the app uses. Components only use var(--…).
+ *
+ * Colors: Osprey Navy palette from Spec 02. Each one is light-dark(LIGHT, DARK): the browser picks
+ * the value for the active color scheme, which follows the system setting unless the user picked
+ * Light or Dark (saved in localStorage, applied as <html data-theme="…">).
+ * Gold (--color-accent) is ONLY for active and matching states.
+ */
+:root {
+  color-scheme: light dark;
+
+  /* --- Spec 02 palette (exact) --- */
+  --color-bg: light-dark(#f5f7fa, #0b1220);
+  --color-surface: light-dark(#ffffff, #152035);
+  --color-text: light-dark(#0f1b2d, #e6ecf5);
+  --color-brand: light-dark(#0b4f9c, #4c9bff);
+  --color-accent: light-dark(#f2b705, #ffc933); /* gold: active + match only */
+  --color-muted: light-dark(#c9d3e0, #2a3a55); /* borders, dividers, quiet fills */
+
+  /* --- derived from the palette (every text/background pair here is at least 4.5:1, WCAG AA) --- */
+  --color-text-soft: light-dark(#4a5b72, #a9b8ce); /* secondary text */
+  --color-on-brand: light-dark(#ffffff, #0b1220); /* text on a brand-colored fill */
+  --color-on-accent: #0f1b2d; /* text on gold, both themes */
+  --color-brand-tint: light-dark(#e3edf8, #1c2c47); /* soft brand background (tags, buttons) */
+  --color-header-bg: light-dark(#0b4f9c, #152035);
+  --color-header-text: light-dark(#ffffff, #e6ecf5);
+  --color-note-bg: light-dark(#0f1b2d, #2a3a55);
+  --color-note-text: light-dark(#ffffff, #e6ecf5);
+  --color-backdrop: light-dark(rgb(15 27 45 / 0.45), rgb(0 0 0 / 0.6));
+  --color-focus: light-dark(#0b4f9c, #8cc0ff);
+
+  /* --- map --- */
+  --map-floor: light-dark(#ffffff, #101a2c);
+  --map-dot: light-dark(#dde4ee, #24324a);
+  --map-wall: light-dark(#0b4f9c, #6c8fbf);
+  --map-room: light-dark(#e6ecf3, #1c2a42);
+  --map-room-line: light-dark(#8796a6, #4a5d7a);
+  --map-facility: light-dark(#f3e1e1, #3a2a35);
+  --map-facility-line: light-dark(#b48a8a, #7d5a68);
+  --map-stair-bg: light-dark(#ffffff, #101a2c);
+  --map-stair-line: light-dark(#9aa5b1, #4a5d7a);
+  --map-column: light-dark(#6b7785, #8c99a8);
+  --map-balcony: light-dark(#eef6ea, #1a2b26);
+  --map-balcony-line: light-dark(#6a8f5a, #7fb27a);
+  --map-track: light-dark(#e9d9cf, #3b2f2a);
+  --map-item-line: light-dark(#ffffff, #0b1220);
+  --map-label: light-dark(#4a5b72, #a9b8ce);
+  --map-label-halo: light-dark(#ffffff, #101a2c);
+
+  /* --- zone colors (legend + item fills) --- */
+  --zone-cardio: light-dark(#1f78b4, #5aa9e6);
+  --zone-machines: light-dark(#3d5a80, #8fa9c9);
+  --zone-free-weights: light-dark(#6a4c93, #b39ddb);
+  --zone-racks: light-dark(#1b4332, #74c69d);
+  --zone-rig: light-dark(#9c3d54, #e58fa5);
+  --zone-stretch: light-dark(#2a7f7a, #6fd0c8);
+  --zone-other: light-dark(#6b7785, #8c99a8);
+
+  /* --- layout status colors (dev editor only) --- */
+  --status-guess: #ef6c00;
+  --status-sketch: #1565c0;
+  --status-verified: #2e7d32;
+
+  /* --- type --- */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --text-xs: 0.78rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.2rem;
+  --text-xl: 1.5rem;
+
+  /* --- spacing (4 px steps) --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --tap: 44px; /* minimum tap target */
+
+  /* --- radius + shadow --- */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  --shadow-1: 0 1px 3px rgb(0 0 0 / 0.1);
+  --shadow-2: 0 8px 28px rgb(0 0 0 / 0.25);
+
+  /* --- motion --- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1); /* fallback for browsers without linear() */
+}
+@supports (animation-timing-function: linear(0, 1)) {
+  :root {
+    /* Damped spring: overshoots ~4%, settles. */
+    --ease-spring: linear(
+      0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017 19.8%,
+      1.067 23.4%, 1.077 25.4%, 1.075 28%, 1.038 34.8%, 1.003 42.2%, 0.99 47.3%,
+      0.995 60%, 1.001 72%, 1
+    );
+  }
+}
+
+/* A saved choice overrides the system setting. */
+:root[data-theme='light'] { color-scheme: light; }
+:root[data-theme='dark'] { color-scheme: dark; }

@@ -5,6 +5,7 @@ import { DEFAULT_LEVEL } from './levels.js';
 import GymMap from './components/GymMap.jsx';
 import MachineDetail from './components/MachineDetail.jsx';
 import ItemDetail from './components/ItemDetail.jsx';
+import ThemeToggle from './components/ThemeToggle.jsx';
 
 const LEVEL = DEFAULT_LEVEL; // the level toggle comes later; 2F for now
 const ITEMS = LEVEL.items;
@@ -123,12 +124,15 @@ export default function App() {
 
       <header className="header">
         <div className="header-inner">
-          <h1>
-            {FACILITY.name} <span>Map</span>
-          </h1>
-          <p className="subtitle">
-            {FACILITY.campus} · {FACILITY.building}. Tap a machine for muscles worked, how-to steps and a video.
-          </p>
+          <div className="title-block">
+            <h1>
+              {FACILITY.name} <span>Map</span>
+            </h1>
+            <p className="subtitle">
+              {FACILITY.campus} · {FACILITY.building}. Tap a machine for muscles worked, how-to steps and a video.
+            </p>
+          </div>
+          <ThemeToggle />
         </div>
       </header>
 
