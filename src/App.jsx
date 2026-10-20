@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MACHINES, MUSCLE_GROUPS, MAP_WIDTH, MAP_HEIGHT } from './data/gymData.js';
+import { MACHINES, MUSCLE_GROUPS, MAP_WIDTH, MAP_HEIGHT, FACILITY } from './data/gymData.js';
 import { machineMatches, zoneName } from './matching.js';
 import GymMap from './components/GymMap.jsx';
 import MachineDetail from './components/MachineDetail.jsx';
@@ -94,15 +94,20 @@ export default function App() {
   return (
     <div className="app">
       <div className="proto-banner" role="note">
-        Prototype — example layout, not the actual UNF gym floor plan.
+        Draft layout based on public info — may not match the actual UNF gym.{' '}
+        <a href={FACILITY.feedbackUrl} target="_blank" rel="noopener noreferrer">
+          Help us fix it!
+        </a>
       </div>
 
       <header className="header">
         <div className="header-inner">
           <h1>
-            Rec Center <span>Gym Map</span>
+            {FACILITY.name} <span>Map</span>
           </h1>
-          <p className="subtitle">Tap a machine to see muscles worked, how-to steps and a video.</p>
+          <p className="subtitle">
+            {FACILITY.campus} · {FACILITY.building}. Tap a machine for muscles worked, how-to steps and a video.
+          </p>
         </div>
       </header>
 
@@ -166,6 +171,12 @@ export default function App() {
             </div>
           </div>
           <p className="map-hint">Swipe sideways to see the whole floor on small screens.</p>
+          <p className="legend">
+            <span>
+              <strong>Draft:</strong> equipment is from public sources; most positions are guesses (“location: guess”).
+            </span>
+            <span>Dashed green = outdoor balcony · Hatched = open atrium.</span>
+          </p>
         </section>
 
         <section className="list-card" aria-label="Machine list">
@@ -196,7 +207,7 @@ export default function App() {
       </main>
 
       <footer className="footer">
-        Student prototype · Not affiliated with or endorsed by UNF · Videos are third-party YouTube content.
+        Student-made draft · Not affiliated with or endorsed by UNF · Info from public UNF pages, UNF Spinnaker and photos · Videos are third-party YouTube content.
       </footer>
 
       {selected && <MachineDetail machine={selected} closing={closing} onClose={closePanel} />}
