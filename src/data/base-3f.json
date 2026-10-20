@@ -1,0 +1,18 @@
+{
+  "about": "PLACEHOLDER 3rd floor (indoor track). Not traced from a plan: the track is a ~1/8 mile (660 ft) loop drawn roughly over the middle of the 2nd-floor footprint, using the same feet coordinates as base-2f.json. Replace with a traced plan or scan when available.",
+  "view": {"x":195,"y":40,"width":300,"height":135},
+  "entrance": null,
+  "entranceNote": "Unknown. Set to {\"x\": ..., \"y\": ..., \"label\": \"Entrance\"} (feet) to show the label.",
+  "outline": [[205,48],[485,48],[485,166],[205,166]],
+  "track": {
+    "outer": [[230,62],[460,62],[474,76],[474,138],[460,152],[230,152],[216,138],[216,76]],
+    "inner": [[240,72],[450,72],[462,84],[462,130],[450,142],[240,142],[228,130],[228,84]],
+    "lanes": 3,
+    "direction": "Direction of travel not confirmed"
+  },
+  "openings": [{"name":"Overlook (open to the 2nd floor)","points":[[262,88],[428,88],[428,126],[262,126]]}],
+  "rooms": [],
+  "facilities": [],
+  "stairs": [],
+  "columns": []
+}

@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MACHINES, MUSCLE_GROUPS, FACILITY } from './data/gymData.js';
 import { machineMatches, itemMatches, zoneName } from './matching.js';
-import { ITEMS, VIEW } from './layout.js';
+import { DEFAULT_LEVEL } from './levels.js';
 import GymMap from './components/GymMap.jsx';
 import MachineDetail from './components/MachineDetail.jsx';
 import ItemDetail from './components/ItemDetail.jsx';
+
+const LEVEL = DEFAULT_LEVEL; // the level toggle comes later; 2F for now
+const ITEMS = LEVEL.items;
+const VIEW = LEVEL.base.view;
 
 const ZOOM = 2.2; // how far the map zooms toward a tapped item
 const CLOSE_MS = 260; // keep in sync with the exit animation in styles.css
@@ -178,6 +182,7 @@ export default function App() {
             <div className="map-stage">
               <div className={`map-zoom ${zoomed ? 'is-zoomed' : ''}`} style={{ transform: zoomTransform(zoomed) }}>
                 <GymMap
+                  base={LEVEL.base}
                   items={ITEMS}
                   matchedIds={matchedItemIds}
                   filtering={filtering}

@@ -37,28 +37,40 @@ npm run preview    # serve dist/ at http://localhost:4173
 
 The data is split into **where things are** and **what they are**:
 
-- **[`src/data/layout-2f.json`](src/data/layout-2f.json)** holds where every item on the 2nd floor sits. Each item is `{ id, name, type, zone, x, y, rotation, width, depth, status, notes, machineId? }`:
+- **`src/data/layout-<level>.json`** ([2F](src/data/layout-2f.json), [3F](src/data/layout-3f.json)) holds where every item sits. These files are the **only** place machine positions live. Each item is `{ id, name, type, zone, x, y, rotation, width, depth, status, notes, machineId? }`:
   - Units are **feet**. `x`, `y` are the item's center and `rotation` is in degrees clockwise.
   - `status` is one of `guess | sketch | photo-verified | scan-verified`.
   - `machineId` (optional) links the item to an entry in `gymData.js` so tapping it shows muscles, how-to and video. Items without one show a simple "no info yet" panel.
-- **[`src/data/base-2f.json`](src/data/base-2f.json)** is the floor plan traced from the official 2nd-floor plan: rec-area outline, rooms, stairs, balcony and structural columns, all in feet. The scale is an **estimate** (28 ft column bay) until a wall is measured.
-- **[`src/data/gymData.js`](src/data/gymData.js)** holds what each machine is: `MACHINES` (muscles, steps, tips, `youtubeId`), `ZONES` (names), `MUSCLE_GROUPS` (filter chips) and `FACILITY` (header text, feedback link).
+  - The file starts with a `meta` block: `{ version, updated, source: "sketch" | "photos" | "scan", units: "ft", floor, ... }`. `version` is the file-format version (1). Older files without `meta` (the Stage A shape, or a bare `[ ...items ]` list) still load.
+- **`src/data/base-<level>.json`** is the floor itself, in feet: `view` (the part of the floor the map shows), `outline` (required), and optional `rooms`, `facilities`, `stairs`, `balcony`, `columns`, `track`, `openings` and `entrance`. 2F is traced from the official plan; the scale is an **estimate** (28 ft column bay) until a wall is measured. 3F is a **placeholder** (approximate track loop).
+- **[`src/data/gymData.js`](src/data/gymData.js)** holds what each machine is: `MACHINES` (muscles, steps, tips, optional `video`), `ZONES` (names) and `FACILITY` (header text, feedback link).
+- **[`src/levels.js`](src/levels.js)** lists the levels (one line per floor).
 
-Moving a machine only changes `layout-2f.json`. No component code changes.
+## Updating the layout
+
+Positions will keep improving (sketch → photos → scan). Each update is just a new layout file:
+
+1. `npm run dev` and open `http://localhost:5173/?edit=1` (add `&level=3f` for the track, or use the level dropdown).
+2. Move/edit items, set **Source** (sketch, photos, scan), then click **Export JSON**. You get `layout-2f.json` (or `layout-3f.json`) with a `meta` block and today's date in `meta.updated`.
+3. Replace `src/data/layout-2f.json` with the downloaded file.
+4. `npm run validate`. It prints every problem in plain words. **Errors** (missing or duplicate id, missing name, bad status, non-number coordinates, unknown `machineId`, units not feet) stop the build; **warnings** (item outside the floor outline, item still called "New item", no `meta` block) don't. The same check runs before every `npm run build` and in the browser console during `npm run dev`.
+5. Commit and open a PR. No code changes are needed.
+
+### Swap in a scan underlay (e.g. a LiDAR top-down export)
+
+- Put the image in [`dev-assets/`](dev-assets/README.md) (git-ignored, never published). Every `.jpg`, `.png` or `.webp` there shows up in the editor's **Underlay** dropdown. Or use **Pick image file…** to open any image from disk without copying it.
+- Line it up with the **x / y / width (ft)** boxes: x, y is where the image's top-left corner sits on the map, width is how wide the image is in feet (height follows the image's proportions). `plan-2f-straightened.jpg` lines up automatically.
+
+### Swap in a new base map (from a scan)
+
+Replace `src/data/base-2f.json` with a new file of the same shape. Only `view` and `outline` are required, so you can start with just the outer walls and add rooms, stairs and columns later. Keep the same origin (top-left, feet) if you want existing item positions to stay put; otherwise re-place items in the editor on top of the new base. Set `entrance` to `{ "x": ..., "y": ..., "label": "Entrance" }` to show the entrance label (it is `null`, so hidden, until we confirm where it is). Run `npm run validate`.
 
 ### Layout editor (dev only)
 
-```bash
-npm run dev
-# open http://localhost:5173/?edit=1
-```
-
 - **Drag** an item to move it. **Drag the yellow dot** to rotate it (hold Shift for 15° steps).
 - **Arrow keys** nudge the selected item 0.5 ft (Shift = 5 ft).
-- Click an item to edit its **name, type, zone, status, linked machine, size and notes**. Use **Add item** and **Delete item** to add or remove items.
-- **Official plan underlay**: put `plan-2f-straightened.jpg` in [`dev-assets/`](dev-assets/README.md) and toggle it on to see the official plan under the map. The image is git-ignored and never published.
-- Edits autosave in your browser (localStorage). **Reset** goes back to the file.
-- **Export JSON** downloads `layout-2f.json`. Replace `src/data/layout-2f.json` with it and open a PR.
+- Click an item to edit its **name (required), type, zone, status, linked machine, size and notes**. Use **Add item** and **Delete item** to add or remove items.
+- Edits autosave in your browser (localStorage, per level). The toolbar says whether your edits differ from the file and shows live error/warning counts. **Reset** goes back to the file.
 
 The editor is loaded with a dynamic `import()` behind `import.meta.env.DEV` (see [`src/main.jsx`](src/main.jsx)), so it is not part of `npm run build`. To check: `npm run build && grep -r LAYOUT_EDITOR_MARKER dist/` should print nothing.
 

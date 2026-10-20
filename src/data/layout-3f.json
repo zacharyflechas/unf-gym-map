@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "version": 1,
+    "updated": "2026-10-20",
+    "source": "sketch",
+    "units": "ft",
+    "floor": "3F",
+    "about": "PLACEHOLDER 3rd-floor (indoor track) layout so the level toggle works. Every item is a guess; replace with real positions from photos or a scan.",
+    "coordinates": "x, y = item center in feet (same origin as base-3f.json). rotation = degrees clockwise. width along the item's x-axis, depth along its y-axis."
+  },
+  "items": [
+    {
+      "id": "t001",
+      "name": "Stretch / warm-up mats",
+      "type": "stretch-item",
+      "zone": "Warm-up",
+      "x": 300,
+      "y": 159,
+      "rotation": 0,
+      "width": 20,
+      "depth": 6,
+      "status": "guess",
+      "notes": "Placeholder. Not verified.",
+      "machineId": "stretch"
+    },
+    {
+      "id": "t002",
+      "name": "Bench by the track",
+      "type": "bench",
+      "zone": "Warm-up",
+      "x": 400,
+      "y": 56,
+      "rotation": 0,
+      "width": 6,
+      "depth": 2,
+      "status": "guess",
+      "notes": "Placeholder. Not verified."
+    },
+    {
+      "id": "t003",
+      "name": "Water fountain",
+      "type": "round-item",
+      "zone": "Warm-up",
+      "x": 470,
+      "y": 159,
+      "rotation": 0,
+      "width": 2,
+      "depth": 2,
+      "status": "guess",
+      "notes": "Placeholder. Not verified."
+    }
+  ]
+}

@@ -120,6 +120,10 @@ button { font: inherit; cursor: pointer; }
 .base-facility { fill: #f4dede; stroke: #b48a8a; stroke-width: 0.35; }
 .base-stair { fill: url(#stair-hatch); stroke: #6b7785; stroke-width: 0.35; }
 .base-balcony { fill: #eef6ea; stroke: #8bb07a; stroke-width: 0.6; stroke-dasharray: 2 1.2; }
+.base-track { fill: #dfe7f1; stroke: #6b7785; stroke-width: 0.4; }
+.base-opening { fill: #ffffff; stroke: #8796a6; stroke-width: 0.35; stroke-dasharray: 1.5 1; }
+.hatch-bg { fill: #fff; }
+.hatch-line { stroke: #9aa5b1; stroke-width: 0.4; }
 .base-column { fill: #fff; stroke: #6b7785; stroke-width: 0.35; }
 .base-label { font-size: 4px; font-weight: 700; fill: #6a8f5a; }
 .zone-label {

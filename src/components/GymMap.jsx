@@ -1,15 +1,15 @@
 import BaseMap from './BaseMap.jsx';
-import { VIEW_BOX, itemTransform, typeGroup, zoneLabels } from '../layout.js';
+import { viewBoxOf, itemTransform, typeGroup, zoneLabels } from '../layout.js';
 
 /**
- * Public floor map. Everything is in feet: the base map comes from base-2f.json and each
- * item from layout-2f.json, drawn as a rectangle (or circle) at its real size and angle.
+ * Public floor map. Everything is in feet: the base map comes from base-<level>.json and each
+ * item from layout-<level>.json, drawn as a rectangle (or circle) at its real size and angle.
  */
-export default function GymMap({ items, matchedIds, filtering, isSelected, onSelect }) {
+export default function GymMap({ base, items, matchedIds, filtering, isSelected, onSelect }) {
   const labels = zoneLabels(items);
   return (
-    <svg className="gym-map" viewBox={VIEW_BOX} role="img" aria-label="Floor map of the 2nd-floor gym with clickable equipment">
-      <BaseMap />
+    <svg className="gym-map" viewBox={viewBoxOf(base.view)} role="img" aria-label="Floor map of the 2nd-floor gym with clickable equipment">
+      <BaseMap base={base} />
 
       {items.map((item, i) => {
         const matched = matchedIds.has(item.id);

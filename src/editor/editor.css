@@ -25,3 +25,10 @@
 .ed-num { font-size: 2.2px; font-weight: 700; fill: #000; pointer-events: none; }
 .rotate-arm { stroke: #f2b705; stroke-width: 0.3; }
 .rotate-handle { fill: #f2b705; stroke: #0f1b2d; stroke-width: 0.3; cursor: crosshair; }
+.underlay-bar { background: #083c78; padding-top: 6px; padding-bottom: 6px; font-size: 0.85rem; }
+.editor-bar select { font: inherit; padding: 3px 4px; }
+.small-num { width: 70px; }
+.file-pick { cursor: pointer; text-decoration: underline; }
+.file-pick input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.bad { color: #c62828; font-weight: 700; }
+.editor-bar .bad { color: #ffb4a8; }
