@@ -11,8 +11,12 @@
  * and docs/unf-draft-findings.md (not shown in the app).
  *
  * ZONES:    { id, name }  (names shown in the list and panel)
- * MACHINES: { id, name, short, zone, muscles: { primary, secondary }, steps, tips, youtubeId|null }
- *   youtubeId – only IDs verified via YouTube oEmbed (HTTP 200); else null
+ * MACHINES: { id, name, short, zone, muscles: { primary, secondary }, steps, tips, video? }
+ *   video (optional) – { youtubeId, source: 'zach' | 'external', title?, cues?: [..] }
+ *     Only for machines where form is non-obvious or easy to get wrong (Spec 02 video policy):
+ *     racks/squat, bench, cable station, plate-loaded, leg press, lat pulldown, rows, Synergy 360.
+ *     source 'zach' shows a "Coach Zach" label and lists his `cues` under the video.
+ *     IDs are checked with YouTube oEmbed (HTTP 200). No video → no video card (no search link).
  */
 
 export const FACILITY = {
@@ -48,7 +52,6 @@ export const MACHINES = [
       'Cool down, press Stop and wait for the belt to stop before stepping off.',
     ],
     tips: ['Don’t hang on the rails — lower the speed or incline instead.', 'Wipe down after use (DDFC policy).'],
-    youtubeId: 'E7sgqy7r6yc',
   },
   {
     id: 'stepmill', name: 'Step Mills', short: 'ST', zone: 'cardio',
@@ -60,7 +63,6 @@ export const MACHINES = [
       'Lower the level to cool down; wait for the stairs to stop before stepping off.',
     ],
     tips: ['Use the rails for balance only — don’t lean on them.', 'Short intervals are a great finisher.'],
-    youtubeId: 'Zn1O9LcKW9E',
   },
   {
     id: 'elliptical', name: 'Ellipticals', short: 'EL', zone: 'cardio',
@@ -72,7 +74,6 @@ export const MACHINES = [
       'Slow to a stop before stepping off.',
     ],
     tips: ['Keep posture tall and core engaged.'],
-    youtubeId: 'sHMemwz_HPU',
   },
   {
     id: 'bike', name: 'Bikes', short: 'BK', zone: 'cardio',
@@ -83,8 +84,6 @@ export const MACHINES = [
       'Start pedaling at light resistance, then build gradually.',
     ],
     tips: ['Upright and recumbent bikes may both be present — recumbents are easier on the back.'],
-    youtubeId: null,
-    youtubeSearch: 'how to set up an exercise bike seat height',
   },
   {
     id: 'rower', name: 'Rowing Machines', short: 'RW', zone: 'cardio',
@@ -95,7 +94,6 @@ export const MACHINES = [
       'Recover: arms, body, then knees — slide back to the start.',
     ],
     tips: ['Damper 3–5 is plenty for most workouts.', 'Rowers are allowed out on the balcony (policy).'],
-    youtubeId: '4zWu1yuJ0_g',
   },
 
   // ---------------- MACHINES ----------------
@@ -109,7 +107,7 @@ export const MACHINES = [
       'Re-engage the safeties before getting out.',
     ],
     tips: ['Keep your lower back on the pad — reduce depth if it rounds.'],
-    youtubeId: 'sp5lOlwj0mI',
+    video: { youtubeId: 'sp5lOlwj0mI', source: 'external', title: 'Leg Press setup & movements (Matrix Fitness)' },
   },
   {
     id: 'leg-extension', name: 'Leg Extension', short: 'LE', zone: 'machines',
@@ -120,7 +118,6 @@ export const MACHINES = [
       'Extend your legs, pause, and lower slowly.',
     ],
     tips: ['No swinging — control the weight both ways.'],
-    youtubeId: 'xd9m2S_Rw4s',
   },
   {
     id: 'leg-curl', name: 'Leg Curl', short: 'LC', zone: 'machines',
@@ -131,7 +128,6 @@ export const MACHINES = [
       'Curl your heels back as far as you can, then return slowly.',
     ],
     tips: ['Keep hips pressed into the seat.'],
-    youtubeId: '_2Kd0d-JEUM',
   },
   {
     id: 'hip-abductor', name: 'Hip Ab/Adductor', short: 'HA', zone: 'machines',
@@ -142,7 +138,6 @@ export const MACHINES = [
       'Move your legs apart/together under control, then return slowly.',
     ],
     tips: ['Use a range you can control — don’t let the stack slam.'],
-    youtubeId: 'b-cxonq03vQ',
   },
   {
     id: 'lat-pulldown', name: 'Lat Pulldown', short: 'PD', zone: 'machines',
@@ -153,7 +148,7 @@ export const MACHINES = [
       'Let the bar rise slowly until arms are straight.',
     ],
     tips: ['Never pull behind the neck.'],
-    youtubeId: 'SALxEARiMkw',
+    video: { youtubeId: 'SALxEARiMkw', source: 'external', title: 'How to do Lat Pulldowns (ATHLEAN-X)' },
   },
   {
     id: 'seated-row', name: 'Seated Row', short: 'SR', zone: 'machines',
@@ -164,7 +159,7 @@ export const MACHINES = [
       'Extend arms slowly.',
     ],
     tips: ['Don’t rock back and forth.'],
-    youtubeId: 'vwHG9Jfu4sw',
+    video: { youtubeId: 'vwHG9Jfu4sw', source: 'external', title: 'How to do the seated cable row (Max Euceda)' },
   },
   {
     id: 'chest-press', name: 'Chest Press', short: 'CP', zone: 'machines',
@@ -175,7 +170,6 @@ export const MACHINES = [
       'Return slowly until you feel a stretch in your chest.',
     ],
     tips: ['Keep elbows ~45° from your body.'],
-    youtubeId: '2y6ntGVg4dw',
   },
   {
     id: 'shoulder-press', name: 'Shoulder Press', short: 'SP', zone: 'machines',
@@ -186,7 +180,6 @@ export const MACHINES = [
       'Lower under control.',
     ],
     tips: ['Keep your lower back against the pad.'],
-    youtubeId: '7ijGii2c02o',
   },
   {
     id: 'plate-loaded', name: 'Plate-Loaded Machines', short: 'PL', zone: 'machines',
@@ -198,7 +191,7 @@ export const MACHINES = [
       'Unload plates when finished.',
     ],
     tips: ['Video shows a Hammer Strength–style chest press; the DDFC’s exact models/brands are unknown.'],
-    youtubeId: 'B3HWtDDKBlY',
+    video: { youtubeId: 'B3HWtDDKBlY', source: 'external', title: 'Hammer Strength chest press tutorial (Rapid Fitness)' },
   },
   {
     id: 'cable-station', name: 'Cable Station', short: 'CB', zone: 'machines',
@@ -209,7 +202,7 @@ export const MACHINES = [
       'Move under control — e.g. flys, rows, pushdowns or curls.',
     ],
     tips: ['Return the attachments to their hooks when done.'],
-    youtubeId: '22AFyTaVs5g',
+    video: { youtubeId: '22AFyTaVs5g', source: 'external', title: 'How to use cable machines (Naomi Kong)' },
   },
   {
     id: 'cybex-total-access', name: 'Accessible Machines (Cybex Total Access)', short: 'TA', zone: 'machines',
@@ -220,7 +213,6 @@ export const MACHINES = [
       'Pick a light starting weight and press/pull under control.',
     ],
     tips: ['Ask DDFC staff to help with setup the first time.'],
-    youtubeId: 'YV0DOrt6-ys',
   },
   {
     id: 'ube', name: 'Upper Body Ergometer', short: 'UB', zone: 'machines',
@@ -231,7 +223,6 @@ export const MACHINES = [
       'Increase resistance gradually; try forward and backward.',
     ],
     tips: ['Great cardio option for lower-body injuries.'],
-    youtubeId: 'BLVu198om5g',
   },
 
   // ---------------- RACKS ----------------
@@ -248,7 +239,7 @@ export const MACHINES = [
       'Only one barbell per rack; Olympic lifts must be in a rack/platform.',
       'Use collars — strongly recommended by DDFC policy.',
     ],
-    youtubeId: '-bJIpOq-LWk',
+    video: { youtubeId: '-bJIpOq-LWk', source: 'external', title: 'How to do a Barbell Back Squat (NASM)' },
   },
   {
     id: 'deadlift', name: 'Platforms / Deadlift', short: 'DL', zone: 'racks',
@@ -259,8 +250,6 @@ export const MACHINES = [
       'Brace, push the floor away and stand tall; lower with control.',
     ],
     tips: ['Diamond/trap bar farmer’s carries only behind the squat racks (policy).', 'No lifting behind an occupied rack.'],
-    youtubeId: null,
-    youtubeSearch: 'how to deadlift for beginners proper form',
   },
 
   // ---------------- COZY CORNER ----------------
@@ -273,8 +262,6 @@ export const MACHINES = [
       'Do 10–15 controlled reps per machine, then move on.',
     ],
     tips: ['UNF offers a free “Novice Workout” session that teaches this circuit.'],
-    youtubeId: null,
-    youtubeSearch: 'Nautilus One selectorized circuit how to use',
   },
   {
     id: 'light-dumbbells', name: 'Light Dumbbells', short: 'LD', zone: 'cozy',
@@ -285,7 +272,6 @@ export const MACHINES = [
       'Return dumbbells to their spot.',
     ],
     tips: ['There are 4 light dumbbell areas away from the main heavy area — one is in the Cozy Corner.'],
-    youtubeId: 'qEwKCR5JCog',
   },
   {
     id: 'stretch', name: 'Stretch Area', short: 'SA', zone: 'cozy',
@@ -296,8 +282,6 @@ export const MACHINES = [
       'Use stretch machines/foam rollers if available.',
     ],
     tips: ['There are 3 dedicated stretch mat areas plus stretch machines; stretch mats were refreshed in 2023–24.'],
-    youtubeId: null,
-    youtubeSearch: 'post workout full body stretch routine',
   },
 
   // ---------------- PLAYGROUND ----------------
@@ -310,7 +294,7 @@ export const MACHINES = [
       'Share stations and put accessories back.',
     ],
     tips: ['Video is Life Fitness’s product demo of the Synrgy360, not a UNF video.'],
-    youtubeId: 'w6VWeQfn8_0',
+    video: { youtubeId: 'w6VWeQfn8_0', source: 'external', title: 'Synrgy360 overview (Life Fitness)' },
   },
   {
     id: 'trx', name: 'TRX Suspension', short: 'TX', zone: 'playground',
@@ -321,7 +305,6 @@ export const MACHINES = [
       'Keep a straight plank line from head to heels.',
     ],
     tips: ['Step your feet forward/back to make it easier or harder.'],
-    youtubeId: 'jUJiXW2HGz0',
   },
 
   // ---------------- FREE WEIGHTS ----------------
@@ -334,7 +317,6 @@ export const MACHINES = [
       'Move away from the rack to train; re-rack in the labeled spot.',
     ],
     tips: ['EZ-curl bar may be used anywhere in the free weight area for non-traveling exercises (policy).'],
-    youtubeId: 'qEwKCR5JCog',
   },
   {
     id: 'bench-press', name: 'Barbell Benches', short: 'BP', zone: 'free-weights',
@@ -345,7 +327,7 @@ export const MACHINES = [
       'Press up and re-rack.',
     ],
     tips: ['Ask for a spot when going heavy.', 'No standing barbell shoulder press over a bench-press bench (policy).'],
-    youtubeId: 'gRVjAtPip0Y',
+    video: { youtubeId: 'gRVjAtPip0Y', source: 'external', title: 'How to Perform Bench Press (Buff Dudes)' },
   },
 
   // ---------------- CROSSPREY-FIT ----------------
@@ -358,7 +340,6 @@ export const MACHINES = [
       'Drop down with soft knees.',
     ],
     tips: ['Upside-down crunches and “skin the cat” are not permitted (policy).'],
-    youtubeId: '95zYvdKUn1o',
   },
   {
     id: 'olympic-platform', name: 'Olympic Platforms (×2)', short: 'OP', zone: 'crossprey',
@@ -369,7 +350,6 @@ export const MACHINES = [
       'Keep the bar close, extend hips explosively, and catch on your shoulders.',
     ],
     tips: ['Diamond bar deadlifts on the platform only with bumper plates (policy).'],
-    youtubeId: 'lI35socHJ4k',
   },
   {
     id: 'slam-wall', name: 'Slam Wall', short: 'SW', zone: 'crossprey',
@@ -380,7 +360,6 @@ export const MACHINES = [
       'Pick it up with a flat back and repeat.',
     ],
     tips: ['Wall balls and handstand push-ups must be done in this area (policy).'],
-    youtubeId: 'YFORkljMrEQ',
   },
   {
     id: 'air-bike', name: 'Air Bikes', short: 'AB', zone: 'crossprey',
@@ -391,6 +370,5 @@ export const MACHINES = [
       'Try 10–20 s hard / 40–60 s easy intervals.',
     ],
     tips: ['Allowed out on the balcony (policy).'],
-    youtubeId: '7b6n9Xuc3CA',
   },
 ];

@@ -65,3 +65,31 @@ pre-Stage-A guessed map and is kept for history only; positions now come from `s
 | Olympic Platforms (×2) (`olympic-platform`) | high | low | Official: 2 Olympic platforms in Crossprey-Fit. | [ddfc](https://www.unf.edu/recwell/swc/ddfc.html), [policies](https://www.unf.edu/recwell/policies.html) |
 | Slam Wall (`slam-wall`) | high | low | Official: slam wall in Crossprey-Fit. | [ddfc](https://www.unf.edu/recwell/swc/ddfc.html), [policies](https://www.unf.edu/recwell/policies.html) |
 | Air Bikes (`air-bike`) | medium | low | Policies mention “air dyne/assault bikes” being permitted on the patio, implying the DDFC has them. Location: GUESS. | [policies](https://www.unf.edu/recwell/policies.html) |
+
+## Videos removed by the Spec 02 video policy
+
+Spec 02 keeps videos only where form is non-obvious or easy to get wrong. These verified IDs were dropped from
+`gymData.js`. To bring one back, add `video: { youtubeId, source: 'external', title }` to that machine.
+
+| Machine | YouTube ID |
+| --- | --- |
+| treadmill | E7sgqy7r6yc |
+| stepmill | Zn1O9LcKW9E |
+| elliptical | sHMemwz_HPU |
+| rower | 4zWu1yuJ0_g |
+| leg-extension | xd9m2S_Rw4s |
+| leg-curl | _2Kd0d-JEUM |
+| hip-abductor | b-cxonq03vQ |
+| chest-press | 2y6ntGVg4dw |
+| shoulder-press | 7ijGii2c02o |
+| cybex-total-access | YV0DOrt6-ys |
+| ube | BLVu198om5g |
+| light-dumbbells | qEwKCR5JCog |
+| dumbbells | qEwKCR5JCog |
+| trx | jUJiXW2HGz0 |
+| monkey-bars | 95zYvdKUn1o |
+| olympic-platform | lI35socHJ4k (power clean) |
+| slam-wall | YFORkljMrEQ |
+| air-bike | 7b6n9Xuc3CA |
+
+`deadlift` (Platforms / Deadlift) is on the policy list but has no verified video yet.

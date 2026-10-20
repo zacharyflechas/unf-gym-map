@@ -8,20 +8,6 @@ export const viewBoxOf = (v) => `${v.x} ${v.y} ${v.width} ${v.height}`;
 /** SVG transform that puts an item's own (0,0) at its center and turns it. */
 export const itemTransform = (item) => `translate(${item.x} ${item.y}) rotate(${item.rotation})`;
 
-/** Color group for an item type (used as a CSS class). Anything unknown is a "machine". */
-const TYPE_GROUP = {
-  treadmill: 'cardio',
-  elliptical: 'cardio',
-  stairclimber: 'cardio',
-  bike: 'cardio',
-  rack: 'rack',
-  'db-rack': 'weights',
-  bench: 'weights',
-  rig: 'rig',
-  desk: 'desk',
-};
-export const typeGroup = (type) => TYPE_GROUP[type] ?? 'machine';
-
 /** One label per zone, placed at the average position of that zone's items. */
 export function zoneLabels(items) {
   const sums = {};

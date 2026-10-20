@@ -1,26 +1,24 @@
 # Rec Center Gym Map (UNF prototype)
 
-An interactive, mobile-friendly gym floor map for students. Tap a machine to see the muscles it works, short how-to steps, tips, and an embedded YouTube tutorial.
+An interactive, mobile-friendly gym floor map for students. Tap a machine to see the muscles it works, short how-to steps, tips, and (for machines where form matters most) a tap-to-load tutorial video.
 
-> **Draft:** on the `unf-layout-draft` branch, the map is a best-effort draft of the **Dottie Dorion Fitness Center** (2nd floor, Student Wellness Complex, Building 61). It is built from public sources only. The equipment list is mostly sourced, but most **positions are guesses**. Each zone and machine carries `confidence` / `locationConfidence` / `sources` fields. See [`docs/unf-draft-findings.md`](docs/unf-draft-findings.md) for all sources. This project is not affiliated with or endorsed by UNF and uses no UNF logos. **Corrections are welcome:** open an issue.
+> **Draft:** on the `unf-layout-draft` branch, the map is a best-effort draft of the **Dottie Dorion Fitness Center** (2nd floor, Student Wellness Complex, Building 61). It is built from public sources only. The equipment list is mostly sourced, but most **positions are guesses**. Research notes and sources are in [`docs/unf-draft-findings.md`](docs/unf-draft-findings.md) and [`docs/machine-sources.md`](docs/machine-sources.md) (not shown in the app). This project is not affiliated with or endorsed by UNF and uses no UNF logos. **Corrections are welcome:** open an issue.
 
 ![Desktop map](screenshots/01-desktop-map.png)
 
 ## Features
 
-- Top-down SVG floor map of the 2nd floor, traced from the official plan (units: feet), with every piece of equipment drawn at its approximate size and clickable (mouse, touch, and keyboard: Tab + Enter). The layout is approximate and still being verified.
-- Detail panel: a right-hand drawer on desktop and a bottom sheet on phones. It shows primary/secondary muscles, how-to steps, tips, and a privacy-enhanced `youtube-nocookie.com` embed. If a machine has no `youtubeId`, the panel shows a YouTube search link instead.
-- Search by machine name, zone, or muscle, plus one-tap muscle-group chips. Matching machines are highlighted on the map with a gold ring and the rest are dimmed.
-- A machine list under the map for big, easy tap targets on phones. On narrow screens the map scrolls sideways.
+- Top-down SVG floor map, traced from the official plan (units: feet), with every piece of equipment drawn at its approximate size, colored by zone, with a small type icon when zoomed in. The layout is approximate and still being verified.
+- **Pan & zoom** (hand-written, no library): drag to move, pinch or scroll to zoom, **+ / − / Reset** buttons; with the map focused, arrow keys pan, `+` / `-` zoom and `0` resets. A drag never opens a machine. Tapping a machine glides the map to it and back when the panel closes.
+- **Levels:** 2F Gym and 3F Track (a placeholder for now). The level is in the URL (`?level=3f`).
+- **Search + zone legend:** search by machine name, zone or muscle; tap a zone in the color legend to highlight it. Both combine; **Clear** resets both. Matches get a still gold glow and the rest dim. The match count is announced to screen readers.
+- **Detail panel as cards:** muscles worked (front/back body diagram: primary strong, secondary light), video, how-to steps, tips. A right-hand drawer on desktop, a bottom sheet on phones.
+- **Tap-to-load video:** only machines on the video list (form is non-obvious) have one. Nothing loads from YouTube until you press Play; then a privacy-enhanced `youtube-nocookie.com` player loads. Videos by Zach show a **Coach Zach** label and his coaching cues.
+- **List view** button for a plain list of machines (big tap targets).
+- **Light / dark theme:** follows the system, or pick Light/Dark (saved on this device). All colors come from [`src/tokens.css`](src/tokens.css) (Osprey Navy palette).
 - Deep links: the URL hash holds the open machine (e.g. `…/#leg-press`). You could print these as QR codes and stick them on the real machines.
+- Accessibility: visible focus rings, 44 px tap targets for controls, AA color contrast in both themes, every machine reachable with Tab + Enter, reduced motion respected.
 - No backend: it builds to a static site.
-- Motion, all in plain CSS (transform/opacity only, no animation library):
-  - **Load sequence:** the equipment fades in one item after another.
-  - **Search matches:** matching items get a gold outline and the rest are dimmed.
-  - **Zoom on tap:** the map zooms and pans toward the tapped machine and zooms back out when the panel closes. This is a CSS transform tween on a wrapper, so the horizontal scroll and tap targets still work. On phones the page also scrolls so the zoomed map shows above the bottom sheet.
-  - **Panel:** the drawer (desktop) or bottom sheet (phone) springs in using CSS `linear()` spring easing, with a cubic-bezier fallback for older browsers. The backdrop fades.
-  - **Hover lift:** on desktop, list rows lift on hover. This only applies under `@media (hover: hover) and (pointer: fine)`.
-  - **Reduced motion:** with `prefers-reduced-motion: reduce`, all of the above is turned off and the map doesn't zoom.
 
 ## Run locally
 
@@ -31,6 +29,8 @@ npm install
 npm run dev        # http://localhost:5173
 npm run build      # production build into dist/
 npm run preview    # serve dist/ at http://localhost:4173
+npm run validate   # check the layout files (also runs before every build)
+npm test           # tests for the search + zone legend logic
 ```
 
 ## Edit the gym data
@@ -44,6 +44,7 @@ The data is split into **where things are** and **what they are**:
   - The file starts with a `meta` block: `{ version, updated, source: "sketch" | "photos" | "scan", units: "ft", floor, ... }`. `version` is the file-format version (1). Older files without `meta` (the Stage A shape, or a bare `[ ...items ]` list) still load.
 - **`src/data/base-<level>.json`** is the floor itself, in feet: `view` (the part of the floor the map shows), `outline` (required), and optional `rooms`, `facilities`, `stairs`, `balcony`, `columns`, `track`, `openings` and `entrance`. 2F is traced from the official plan; the scale is an **estimate** (28 ft column bay) until a wall is measured. 3F is a **placeholder** (approximate track loop).
 - **[`src/data/gymData.js`](src/data/gymData.js)** holds what each machine is: `MACHINES` (muscles, steps, tips, optional `video`), `ZONES` (names) and `FACILITY` (header text, feedback link).
+- **[`src/legend.js`](src/legend.js)** groups layout zone names into the color legend (unknown zones show under Other).
 - **[`src/levels.js`](src/levels.js)** lists the levels (one line per floor).
 
 ## Updating the layout
@@ -74,9 +75,17 @@ Replace `src/data/base-2f.json` with a new file of the same shape. Only `view` a
 
 The editor is loaded with a dynamic `import()` behind `import.meta.env.DEV` (see [`src/main.jsx`](src/main.jsx)), so it is not part of `npm run build`. To check: `npm run build && grep -r LAYOUT_EDITOR_MARKER dist/` should print nothing.
 
-**Adding a video:** check that the ID exists by opening
-`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=VIDEO_ID&format=json`.
-It returns 200 for a real, embeddable video and 401/404 otherwise. If you're not sure about a video, set `youtubeId: null`.
+### Adding a video
+
+Videos follow the Spec 02 policy: only for machines where form is non-obvious or easy to get wrong. In `gymData.js`:
+
+```js
+video: { youtubeId: 'abc123', source: 'zach', title: 'Leg press with Coach Zach', cues: ['Feet hip-width', 'Knees track over toes'] },
+```
+
+- `source: 'zach'` shows the **Coach Zach** label and lists `cues` under the video; `'external'` is someone else's video.
+- Check the ID first: `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=VIDEO_ID&format=json` returns 200 for a real, embeddable video.
+- No `video` means no video card (there is no YouTube search fallback). Removed IDs are listed in [`docs/machine-sources.md`](docs/machine-sources.md).
 
 ## Deploy to GitHub Pages
 

@@ -32,7 +32,9 @@ export default function ItemDetail({ item, closing = false, onClose }) {
           </button>
         </header>
         <div className="detail-body">
-          <p>No how-to info for this item yet.</p>
+          <section className="card">
+            <p>No how-to info for this item yet.</p>
+          </section>
           <p className="disclaimer">The layout is approximate and still being verified, so names and positions may change.</p>
         </div>
       </aside>
