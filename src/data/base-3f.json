@@ -1,5 +1,5 @@
 {
-  "about": "PLACEHOLDER 3rd floor (indoor track). Not traced from a plan: the track is a ~1/8 mile (660 ft) loop drawn roughly over the middle of the 2nd-floor footprint, using the same feet coordinates as base-2f.json. Replace with a traced plan or scan when available.",
+  "about": "PLACEHOLDER 3rd floor (indoor track). Not traced from a plan: the 3-lane, ~1/8 mile (660 ft) track is drawn as a rough loop over the middle of the 2nd-floor footprint (the SWC page says it runs around the building perimeter, overlooking the gym and atrium), using the same feet coordinates as base-2f.json. Replace with a traced plan or scan when available.",
   "view": {"x":195,"y":40,"width":300,"height":135},
   "entrance": null,
   "entranceNote": "Unknown. Set to {\"x\": ..., \"y\": ..., \"label\": \"Entrance\"} (feet) to show the label.",

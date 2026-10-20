@@ -3,18 +3,16 @@
  *  GYM DATA — what each machine is (muscles, how-to, video)
  * ============================================================
  *
- * WHERE things are no longer lives here. Positions are in src/data/layout-2f.json (feet, edited
+ * WHERE things are does not live here. Positions are in src/data/layout-<level>.json (feet, edited
  * with the dev-only ?edit=1 editor); a layout item points at a machine below via `machineId`.
  *
  * DDFC (Dottie Dorion Fitness Center), 2nd floor of the UNF Student Wellness Complex (Building 61).
- * Content built from PUBLIC sources (see SOURCES below and docs/unf-draft-findings.md).
+ * Content built from PUBLIC sources; the research notes and links are in docs/machine-sources.md
+ * and docs/unf-draft-findings.md (not shown in the app).
  *
- * ZONES: { id, name, confidence, locationConfidence, note, sources }  (used for names in the list/panel)
- * MACHINES: { id, name, short, zone, muscles: {primary, secondary}, steps, tips,
- *             youtubeId|null, youtubeSearch?, confidence, locationConfidence, note, sources }
- *   confidence         – how sure we are this equipment EXISTS at the DDFC
- *   locationConfidence – (old draft) how sure the old guessed position was; shown in the panel until Spec 02 removes it
- *   youtubeId          – only IDs verified via YouTube oEmbed (HTTP 200); else null → search link
+ * ZONES:    { id, name }  (names shown in the list and panel)
+ * MACHINES: { id, name, short, zone, muscles: { primary, secondary }, steps, tips, youtubeId|null }
+ *   youtubeId – only IDs verified via YouTube oEmbed (HTTP 200); else null
  */
 
 export const FACILITY = {
@@ -26,83 +24,17 @@ export const FACILITY = {
     'https://github.com/zacharyflechas/unf-gym-map/issues/new?title=Layout%20correction&body=What%20is%20wrong%20or%20missing%3F%0A%0AWhere%20is%20it%20actually%3F',
 };
 
-/** Public sources referenced by `sources: [...]` keys below. */
-export const SOURCES = {
-  ddfc: { title: 'UNF RecWell – Dottie Dorion Fitness Center page (features list, hours)', url: 'https://www.unf.edu/recwell/swc/ddfc.html' },
-  swc: { title: 'UNF RecWell – Student Wellness Complex page', url: 'https://www.unf.edu/recwell/swc/index.html' },
-  facilities: { title: 'UNF RecWell – Hours and Facilities (floor-by-floor list)', url: 'https://www.unf.edu/recwell/hoursandfacilities.html' },
-  policies: { title: 'UNF RecWell – Policies (DDFC rules mention racks, platforms, Crossprey Fit, patio)', url: 'https://www.unf.edu/recwell/policies.html' },
-  ribbon: { title: 'UNF Newsroom, Feb 2024 – SWC ribbon cutting (9 half-racks, new equipment)', url: 'https://www.unf.edu/newsroom/2024/02/SWC-Ribbon-Cutting.html' },
-  spin2024: { title: 'UNF Spinnaker, Feb 29 2024 – Inside UNF’s new and improved SWC (+ rack photo)', url: 'https://unfspinnaker.com/102275/latest/inside-unfs-new-and-improved-student-wellness-center/' },
-  spin2023: { title: 'UNF Spinnaker, Oct 25 2023 – Gym to close for renovations', url: 'https://unfspinnaker.com/101352/news/gym-and-rock-wall-to-close-for-renovations-next-month-university-says/' },
-  spin2016: { title: 'UNF Spinnaker, Aug 12 2016 – UNF Gym Life: What you should know', url: 'https://unfspinnaker.com/51729/entertainment/unf-gym-life-what-you-should-know/' },
-  photos: { title: 'UNF RecWell photos (DDFC/SWC banners, Capital Projects page “swcfloor”, “weightroom”)', url: 'https://www.unf.edu/recwell/projects.html' },
-  arch: { title: 'Architect project sheet (Borrelli + Partners / PSA-Dewberry, 2018 PDF, ~2012 photos)', url: 'https://assets.ctfassets.net/7obzj0odnsj4/7zLDTRbqVycl6APJVzv001/e4e1ef972fefe9af109c7ca47e1351db/UNF_Student_Wellness_Complex.pdf' },
-};
-
 export const ZONES = [
-  {
-    id: 'cardio', name: 'Cardio',
-    confidence: 'high', locationConfidence: 'medium',
-    note: 'Official: an “expansive cardio area” with the balcony just off it; several cardio areas with different views. Photos show rows of treadmills/steppers/ellipticals facing large windows under the 3rd-floor track overhang. Which wall: unknown. Cardio is also “interspersed” elsewhere (integrated floor plan).',
-    sources: ['swc', 'ddfc', 'photos'],
-  },
-  {
-    id: 'patio', name: 'Outdoor Balcony',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: outdoor multi-use balcony “just off of the expansive cardio area”, also used for outdoor group fitness. Rowers, air bikes and light equipment allowed; no heavy equipment/slamming. Exact side: guess.',
-    sources: ['swc', 'policies'],
-  },
-  {
-    id: 'atrium', name: 'Atrium (open)',
-    confidence: 'medium', locationConfidence: 'low',
-    note: 'The 34-ft climbing wall rises from the 1st floor to track level and the track “gives views of the fitness level, atrium”. Size/position of the opening on the 2nd floor: guess.',
-    sources: ['swc', 'arch'],
-  },
-  {
-    id: 'machines', name: 'Machines (selectorized + plate-loaded)',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Leg press, leg extension, hip abductor/adductor and “many other machines” (2016). ~2012 photos show blue/black plate-loaded machines and Power Lift units in the open central floor; the current SWC web-page banner photo (undated) shows machines under a curved “University of North Florida” soffit. Arrangement here: guess.',
-    sources: ['spin2016', 'arch', 'swc'],
-  },
-  {
-    id: 'racks', name: 'Half Racks (×9) + Platforms',
-    confidence: 'high', locationConfidence: 'medium',
-    note: '9 matching half-racks with inlay lifting platforms (Jan 2024) on 4-layer impact flooring. Photos: two facing rows of racks with a center aisle of “North Florida” inlay platforms, one row against floor-to-ceiling exterior windows overlooking a stadium. Which side of the building: unknown.',
-    sources: ['ribbon', 'spin2024', 'spin2023', 'ddfc', 'photos'],
-  },
-  {
-    id: 'cozy', name: 'Cozy Corner',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: “a non-intimidating small fitness center within the larger fitness center” with the Nautilus One circuit, a light dumbbell area, a stretch area and some cardio. Students describe it as “tucked away in a corner”. Which corner: guess.',
-    sources: ['ddfc', 'spin2016'],
-  },
-  {
-    id: 'playground', name: '“Playground” (Synergy 360)',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: functional training area featuring the Life Fitness Synergy 360, nicknamed the Playground. A ~2012 photo shows a red/black rig in the central open floor. Position: guess.',
-    sources: ['ddfc', 'arch'],
-  },
-  {
-    id: 'free-weights', name: 'Dumbbells & Benches',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: a main heavier dumbbell area plus 4 separate light dumbbell areas; “benches galore” and barbell benches (policies). Rubber free-weight area is 6,900 sq ft. Position: guess.',
-    sources: ['ddfc', 'policies', 'spin2016', 'ribbon'],
-  },
-  {
-    id: 'crossprey', name: 'Crossprey-Fit',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: custom monkey bars, 2 Olympic platforms and a slam wall. Policies: wall balls and handstand push-ups must be done here; no barbell lifts in its open space. Position: guess.',
-    sources: ['ddfc', 'policies'],
-  },
+  { id: 'cardio', name: 'Cardio' },
+  { id: 'patio', name: 'Outdoor Balcony' },
+  { id: 'atrium', name: 'Atrium (open)' },
+  { id: 'machines', name: 'Machines (selectorized + plate-loaded)' },
+  { id: 'racks', name: 'Half Racks (×9) + Platforms' },
+  { id: 'cozy', name: 'Cozy Corner' },
+  { id: 'playground', name: '“Playground” (Synergy 360)' },
+  { id: 'free-weights', name: 'Dumbbells & Benches' },
+  { id: 'crossprey', name: 'Crossprey-Fit' },
 ];
-
-export const MUSCLE_GROUPS = [
-  'Quads', 'Hamstrings', 'Glutes', 'Hips', 'Chest', 'Back', 'Lats', 'Shoulders',
-  'Arms', 'Core', 'Full Body', 'Cardio', 'Mobility',
-];
-
-const S_MACHINES = 'Exact brand/position unknown.';
 
 export const MACHINES = [
   // ---------------- CARDIO ----------------
@@ -117,9 +49,6 @@ export const MACHINES = [
     ],
     tips: ['Don’t hang on the rails — lower the speed or incline instead.', 'Wipe down after use (DDFC policy).'],
     youtubeId: 'E7sgqy7r6yc',
-    confidence: 'high', locationConfidence: 'medium',
-    note: 'Rows of treadmills face the windows in photos; new treadmills were bought in 2024. Brand not legible in public photos.',
-    sources: ['spin2016', 'ribbon', 'photos'],
   },
   {
     id: 'stepmill', name: 'Step Mills', short: 'ST', zone: 'cardio',
@@ -132,9 +61,6 @@ export const MACHINES = [
     ],
     tips: ['Use the rails for balance only — don’t lean on them.', 'Short intervals are a great finisher.'],
     youtubeId: 'Zn1O9LcKW9E',
-    confidence: 'high', locationConfidence: 'medium',
-    note: 'Step mills were among the 2024 equipment purchases; stair masters mentioned in 2016.',
-    sources: ['ribbon', 'spin2016', 'photos'],
   },
   {
     id: 'elliptical', name: 'Ellipticals', short: 'EL', zone: 'cardio',
@@ -147,9 +73,6 @@ export const MACHINES = [
     ],
     tips: ['Keep posture tall and core engaged.'],
     youtubeId: 'sHMemwz_HPU',
-    confidence: 'high', locationConfidence: 'medium',
-    note: 'Ellipticals (2016 article) and elliptical/adaptive-motion style trainers visible in photos. Model unknown.',
-    sources: ['spin2016', 'photos'],
   },
   {
     id: 'bike', name: 'Bikes', short: 'BK', zone: 'cardio',
@@ -162,9 +85,6 @@ export const MACHINES = [
     tips: ['Upright and recumbent bikes may both be present — recumbents are easier on the back.'],
     youtubeId: null,
     youtubeSearch: 'how to set up an exercise bike seat height',
-    confidence: 'high', locationConfidence: 'low',
-    note: '“Bicycles” listed in 2016. Upright vs. recumbent mix unknown. (Spin bikes are in the 1st-floor group fitness studio, not here.)',
-    sources: ['spin2016'],
   },
   {
     id: 'rower', name: 'Rowing Machines', short: 'RW', zone: 'cardio',
@@ -176,9 +96,6 @@ export const MACHINES = [
     ],
     tips: ['Damper 3–5 is plenty for most workouts.', 'Rowers are allowed out on the balcony (policy).'],
     youtubeId: '4zWu1yuJ0_g',
-    confidence: 'high', locationConfidence: 'low',
-    note: '“A few rowing machines” (2016); policies allow rowers on the patio. Location on the floor unknown.',
-    sources: ['spin2016', 'policies'],
   },
 
   // ---------------- MACHINES ----------------
@@ -193,9 +110,6 @@ export const MACHINES = [
     ],
     tips: ['Keep your lower back on the pad — reduce depth if it rounds.'],
     youtubeId: 'sp5lOlwj0mI',
-    confidence: 'medium', locationConfidence: 'low',
-    note: 'Leg presses mentioned in 2016; plate-loaded vs. selectorized and current status unknown. ' + S_MACHINES,
-    sources: ['spin2016'],
   },
   {
     id: 'leg-extension', name: 'Leg Extension', short: 'LE', zone: 'machines',
@@ -207,9 +121,6 @@ export const MACHINES = [
     ],
     tips: ['No swinging — control the weight both ways.'],
     youtubeId: 'xd9m2S_Rw4s',
-    confidence: 'medium', locationConfidence: 'low',
-    note: 'Leg extensions mentioned in 2016. ' + S_MACHINES,
-    sources: ['spin2016'],
   },
   {
     id: 'leg-curl', name: 'Leg Curl', short: 'LC', zone: 'machines',
@@ -221,9 +132,6 @@ export const MACHINES = [
     ],
     tips: ['Keep hips pressed into the seat.'],
     youtubeId: '_2Kd0d-JEUM',
-    confidence: 'low', locationConfidence: 'low',
-    note: 'GUESS: not named in any source, but standard in machine lines like the Nautilus One circuit. ' + S_MACHINES,
-    sources: ['ddfc'],
   },
   {
     id: 'hip-abductor', name: 'Hip Ab/Adductor', short: 'HA', zone: 'machines',
@@ -235,9 +143,6 @@ export const MACHINES = [
     ],
     tips: ['Use a range you can control — don’t let the stack slam.'],
     youtubeId: 'b-cxonq03vQ',
-    confidence: 'medium', locationConfidence: 'low',
-    note: 'Hip adductor/abductor mentioned in 2016. ' + S_MACHINES,
-    sources: ['spin2016'],
   },
   {
     id: 'lat-pulldown', name: 'Lat Pulldown', short: 'PD', zone: 'machines',
@@ -249,9 +154,6 @@ export const MACHINES = [
     ],
     tips: ['Never pull behind the neck.'],
     youtubeId: 'SALxEARiMkw',
-    confidence: 'low', locationConfidence: 'low',
-    note: 'GUESS from “many other machines that isolate your arm and back muscles” (2016); a Cybex Total Access lat pulldown is a possibility. ' + S_MACHINES,
-    sources: ['spin2016'],
   },
   {
     id: 'seated-row', name: 'Seated Row', short: 'SR', zone: 'machines',
@@ -263,9 +165,6 @@ export const MACHINES = [
     ],
     tips: ['Don’t rock back and forth.'],
     youtubeId: 'vwHG9Jfu4sw',
-    confidence: 'low', locationConfidence: 'low',
-    note: 'GUESS (back machines mentioned generally in 2016). ' + S_MACHINES,
-    sources: ['spin2016'],
   },
   {
     id: 'chest-press', name: 'Chest Press', short: 'CP', zone: 'machines',
@@ -277,9 +176,6 @@ export const MACHINES = [
     ],
     tips: ['Keep elbows ~45° from your body.'],
     youtubeId: '2y6ntGVg4dw',
-    confidence: 'low', locationConfidence: 'low',
-    note: 'GUESS: a standard machine; not named in sources. ' + S_MACHINES,
-    sources: ['spin2016'],
   },
   {
     id: 'shoulder-press', name: 'Shoulder Press', short: 'SP', zone: 'machines',
@@ -291,9 +187,6 @@ export const MACHINES = [
     ],
     tips: ['Keep your lower back against the pad.'],
     youtubeId: '7ijGii2c02o',
-    confidence: 'low', locationConfidence: 'low',
-    note: 'GUESS: a standard machine; not named in sources. ' + S_MACHINES,
-    sources: ['spin2016'],
   },
   {
     id: 'plate-loaded', name: 'Plate-Loaded Machines', short: 'PL', zone: 'machines',
@@ -306,9 +199,6 @@ export const MACHINES = [
     ],
     tips: ['Video shows a Hammer Strength–style chest press; the DDFC’s exact models/brands are unknown.'],
     youtubeId: 'B3HWtDDKBlY',
-    confidence: 'medium', locationConfidence: 'low',
-    note: 'Plate-loaded machines are referenced by UNF’s free-weight personal-training offer; ~2012 photos show blue/black plate-loaded units and “POWER LIFT”-labelled machines in the central floor. May have changed since.',
-    sources: ['ddfc', 'arch'],
   },
   {
     id: 'cable-station', name: 'Cable Station', short: 'CB', zone: 'machines',
@@ -320,9 +210,6 @@ export const MACHINES = [
     ],
     tips: ['Return the attachments to their hooks when done.'],
     youtubeId: '22AFyTaVs5g',
-    confidence: 'medium', locationConfidence: 'low',
-    note: '“Cables” listed in 2016. Type (crossover vs. dual adjustable pulley) and position unknown.',
-    sources: ['spin2016'],
   },
   {
     id: 'cybex-total-access', name: 'Accessible Machines (Cybex Total Access)', short: 'TA', zone: 'machines',
@@ -334,9 +221,6 @@ export const MACHINES = [
     ],
     tips: ['Ask DDFC staff to help with setup the first time.'],
     youtubeId: 'YV0DOrt6-ys',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: wheelchair-accessible equipment includes Cybex Total Access weight machines. Which models and where: unknown.',
-    sources: ['ddfc'],
   },
   {
     id: 'ube', name: 'Upper Body Ergometer', short: 'UB', zone: 'machines',
@@ -348,9 +232,6 @@ export const MACHINES = [
     ],
     tips: ['Great cardio option for lower-body injuries.'],
     youtubeId: 'BLVu198om5g',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: a “Techno Excite” (likely Technogym Excite) upper body ergometer. Video shows a Technogym arm ergometer. Position unknown.',
-    sources: ['ddfc'],
   },
 
   // ---------------- RACKS ----------------
@@ -368,9 +249,6 @@ export const MACHINES = [
       'Use collars — strongly recommended by DDFC policy.',
     ],
     youtubeId: '-bJIpOq-LWk',
-    confidence: 'high', locationConfidence: 'medium',
-    note: '9 matching half-racks with inlay platforms added Jan 2024; photos show them in two facing rows along exterior windows (PLAE and Rogue bumper plates visible).',
-    sources: ['ribbon', 'spin2024', 'spin2023', 'policies', 'photos'],
   },
   {
     id: 'deadlift', name: 'Platforms / Deadlift', short: 'DL', zone: 'racks',
@@ -383,9 +261,6 @@ export const MACHINES = [
     tips: ['Diamond/trap bar farmer’s carries only behind the squat racks (policy).', 'No lifting behind an occupied rack.'],
     youtubeId: null,
     youtubeSearch: 'how to deadlift for beginners proper form',
-    confidence: 'high', locationConfidence: 'medium',
-    note: 'Inlay platforms with the racks (2024); a “deadlift station” mentioned in 2016; diamond bar rules in policies.',
-    sources: ['ribbon', 'spin2016', 'policies'],
   },
 
   // ---------------- COZY CORNER ----------------
@@ -400,9 +275,6 @@ export const MACHINES = [
     tips: ['UNF offers a free “Novice Workout” session that teaches this circuit.'],
     youtubeId: null,
     youtubeSearch: 'Nautilus One selectorized circuit how to use',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: Nautilus One “Simple Circuit” in the Cozy Corner (page says both 10-piece and 11-unit). Which machines are included: unknown.',
-    sources: ['ddfc'],
   },
   {
     id: 'light-dumbbells', name: 'Light Dumbbells', short: 'LD', zone: 'cozy',
@@ -414,9 +286,6 @@ export const MACHINES = [
     ],
     tips: ['There are 4 light dumbbell areas away from the main heavy area — one is in the Cozy Corner.'],
     youtubeId: 'qEwKCR5JCog',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: 4 light dumbbell areas set away from the main heavier area; one in the Cozy Corner. Others: unknown.',
-    sources: ['ddfc'],
   },
   {
     id: 'stretch', name: 'Stretch Area', short: 'SA', zone: 'cozy',
@@ -429,9 +298,6 @@ export const MACHINES = [
     tips: ['There are 3 dedicated stretch mat areas plus stretch machines; stretch mats were refreshed in 2023–24.'],
     youtubeId: null,
     youtubeSearch: 'post workout full body stretch routine',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: 3 stretch mat areas (one in the Cozy Corner) and several stretch machines. Locations of the other two: unknown.',
-    sources: ['ddfc', 'spin2023'],
   },
 
   // ---------------- PLAYGROUND ----------------
@@ -445,9 +311,6 @@ export const MACHINES = [
     ],
     tips: ['Video is Life Fitness’s product demo of the Synrgy360, not a UNF video.'],
     youtubeId: 'w6VWeQfn8_0',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: Life Fitness Synergy 360 (“the Playground”).',
-    sources: ['ddfc', 'arch'],
   },
   {
     id: 'trx', name: 'TRX Suspension', short: 'TX', zone: 'playground',
@@ -459,9 +322,6 @@ export const MACHINES = [
     ],
     tips: ['Step your feet forward/back to make it easier or harder.'],
     youtubeId: 'jUJiXW2HGz0',
-    confidence: 'medium', locationConfidence: 'low',
-    note: 'TRX bands listed in 2016. Placing them on the functional rig is a GUESS.',
-    sources: ['spin2016'],
   },
 
   // ---------------- FREE WEIGHTS ----------------
@@ -475,9 +335,6 @@ export const MACHINES = [
     ],
     tips: ['EZ-curl bar may be used anywhere in the free weight area for non-traveling exercises (policy).'],
     youtubeId: 'qEwKCR5JCog',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: main heavier, larger dumbbell area; 525 lb of new dumbbells added in 2024.',
-    sources: ['ddfc', 'ribbon', 'policies'],
   },
   {
     id: 'bench-press', name: 'Barbell Benches', short: 'BP', zone: 'free-weights',
@@ -489,9 +346,6 @@ export const MACHINES = [
     ],
     tips: ['Ask for a spot when going heavy.', 'No standing barbell shoulder press over a bench-press bench (policy).'],
     youtubeId: 'gRVjAtPip0Y',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Policies repeatedly mention “barbell benches”/“bench press”; “benches galore” (2016). Position: guess.',
-    sources: ['policies', 'spin2016'],
   },
 
   // ---------------- CROSSPREY-FIT ----------------
@@ -505,9 +359,6 @@ export const MACHINES = [
     ],
     tips: ['Upside-down crunches and “skin the cat” are not permitted (policy).'],
     youtubeId: '95zYvdKUn1o',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: custom-built monkey bars in the Crossprey-Fit area.',
-    sources: ['ddfc', 'policies'],
   },
   {
     id: 'olympic-platform', name: 'Olympic Platforms (×2)', short: 'OP', zone: 'crossprey',
@@ -519,9 +370,6 @@ export const MACHINES = [
     ],
     tips: ['Diamond bar deadlifts on the platform only with bumper plates (policy).'],
     youtubeId: 'lI35socHJ4k',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: 2 Olympic platforms in Crossprey-Fit.',
-    sources: ['ddfc', 'policies'],
   },
   {
     id: 'slam-wall', name: 'Slam Wall', short: 'SW', zone: 'crossprey',
@@ -533,9 +381,6 @@ export const MACHINES = [
     ],
     tips: ['Wall balls and handstand push-ups must be done in this area (policy).'],
     youtubeId: 'YFORkljMrEQ',
-    confidence: 'high', locationConfidence: 'low',
-    note: 'Official: slam wall in Crossprey-Fit.',
-    sources: ['ddfc', 'policies'],
   },
   {
     id: 'air-bike', name: 'Air Bikes', short: 'AB', zone: 'crossprey',
@@ -547,8 +392,5 @@ export const MACHINES = [
     ],
     tips: ['Allowed out on the balcony (policy).'],
     youtubeId: '7b6n9Xuc3CA',
-    confidence: 'medium', locationConfidence: 'low',
-    note: 'Policies mention “air dyne/assault bikes” being permitted on the patio, implying the DDFC has them. Location: GUESS.',
-    sources: ['policies'],
   },
 ];

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MACHINES, MUSCLE_GROUPS, FACILITY } from './data/gymData.js';
+import { MACHINES, FACILITY } from './data/gymData.js';
 import { machineMatches, itemMatches, zoneName } from './matching.js';
 import { DEFAULT_LEVEL } from './levels.js';
 import GymMap from './components/GymMap.jsx';
@@ -45,7 +45,7 @@ const idFromHash = () => {
 
 export default function App() {
   const [query, setQuery] = useState('');
-  const [muscle, setMuscle] = useState(null);
+  const [view, setView] = useState('map'); // 'map' or 'list'
   const [selectedId, setSelectedId] = useState(idFromHash);
   const [closing, setClosing] = useState(false);
   const scrollRef = useRef(null);
@@ -76,14 +76,14 @@ export default function App() {
 
   useEffect(() => () => clearTimeout(closeTimer.current), []);
 
-  const filtering = query.trim() !== '' || muscle !== null;
+  const filtering = query.trim() !== '';
   const matchedIds = useMemo(
-    () => new Set(MACHINES.filter((m) => machineMatches(m, query, muscle)).map((m) => m.id)),
-    [query, muscle],
+    () => new Set(MACHINES.filter((m) => machineMatches(m, query)).map((m) => m.id)),
+    [query],
   );
   const matchedItemIds = useMemo(
-    () => new Set(ITEMS.filter((it) => itemMatches(it, machineById(it.machineId), query, muscle)).map((it) => it.id)),
-    [query, muscle],
+    () => new Set(ITEMS.filter((it) => itemMatches(it, machineById(it.machineId), query)).map((it) => it.id)),
+    [query],
   );
   const listed = MACHINES.filter((m) => matchedIds.has(m.id));
 
@@ -149,34 +149,26 @@ export default function App() {
             {filtering && (
               <button
                 className="clear-btn"
-                onClick={() => {
-                  setQuery('');
-                  setMuscle(null);
-                }}
+                onClick={() => setQuery('')}
               >
                 Clear
               </button>
             )}
           </div>
-          <div className="chips" role="group" aria-label="Filter by muscle group">
-            {MUSCLE_GROUPS.map((g) => (
-              <button
-                key={g}
-                className={`chip ${muscle === g ? 'chip-active' : ''}`}
-                aria-pressed={muscle === g}
-                onClick={() => setMuscle(muscle === g ? null : g)}
-              >
-                {g}
-              </button>
-            ))}
-          </div>
           <p className="result-count" aria-live="polite">
             {filtering
-              ? `${matchedIds.size} of ${MACHINES.length} machines match · ${matchedItemIds.size} highlighted on the map`
+              ? `${matchedIds.size} ${matchedIds.size === 1 ? 'machine matches' : 'machines match'} “${query.trim()}” · ${matchedItemIds.size} highlighted on the map`
               : `${MACHINES.length} machines`}
           </p>
         </section>
 
+        <div className="view-switch">
+          <button className="view-btn" aria-pressed={view === 'list'} onClick={() => setView(view === 'map' ? 'list' : 'map')}>
+            {view === 'map' ? 'List view' : 'Map view'}
+          </button>
+        </div>
+
+        {view === 'map' ? (
         <section className="map-card" aria-label="Gym floor map">
           <div className="map-scroll" ref={scrollRef}>
             <div className="map-stage">
@@ -201,7 +193,7 @@ export default function App() {
             <span>Red = restrooms / staff areas · Striped = stairs · Dots = building columns.</span>
           </p>
         </section>
-
+        ) : (
         <section className="list-card" aria-label="Machine list">
           <h2>{filtering ? 'Matching machines' : 'All machines'}</h2>
           {listed.length === 0 ? (
@@ -227,6 +219,7 @@ export default function App() {
             </ul>
           )}
         </section>
+        )}
       </main>
 
       <footer className="footer">
