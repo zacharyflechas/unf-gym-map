@@ -1,27 +1,29 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MACHINES, MUSCLE_GROUPS, MAP_WIDTH, MAP_HEIGHT, FACILITY } from './data/gymData.js';
-import { machineMatches, zoneName } from './matching.js';
+import { MACHINES, MUSCLE_GROUPS, FACILITY } from './data/gymData.js';
+import { machineMatches, itemMatches, zoneName } from './matching.js';
+import { ITEMS, VIEW } from './layout.js';
 import GymMap from './components/GymMap.jsx';
 import MachineDetail from './components/MachineDetail.jsx';
+import ItemDetail from './components/ItemDetail.jsx';
 
-const ZOOM = 1.7; // how far the map zooms toward a tapped machine
-const MAP_VIEW_H = MAP_HEIGHT + 30; // must match the SVG viewBox height in GymMap
+const ZOOM = 2.2; // how far the map zooms toward a tapped item
 const CLOSE_MS = 260; // keep in sync with the exit animation in styles.css
 
 const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 const isNarrow = () => window.matchMedia?.('(max-width: 700px)').matches;
 
 /**
- * CSS transform that zooms the map toward a machine. Uses percentages of the map's own
+ * CSS transform that zooms the map toward an item. Uses percentages of the map's own
  * box so no layout measurement is needed; clamped so the map never pans past its edges.
  */
-function zoomTransform(machine) {
-  if (!machine) return undefined;
+function zoomTransform(item) {
+  if (!item) return undefined;
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
   // On desktop the drawer covers the right side, so aim the machine a bit left of center.
   const targetX = isNarrow() ? 50 : 38;
-  const fx = (machine.x / MAP_WIDTH) * 100;
-  const fy = (machine.y / MAP_VIEW_H) * 100;
+  // item position as a percentage of the visible map (VIEW is in feet)
+  const fx = ((item.x - VIEW.x) / VIEW.width) * 100;
+  const fy = ((item.y - VIEW.y) / VIEW.height) * 100;
   const tx = clamp(targetX - ZOOM * fx, 100 - 100 * ZOOM, 0);
   // On phones only the top of the map peeks out above the bottom sheet, so aim higher.
   const targetY = isNarrow() ? 24 : 45;
@@ -29,9 +31,12 @@ function zoomTransform(machine) {
   return `translate(${tx.toFixed(2)}%, ${ty.toFixed(2)}%) scale(${ZOOM})`;
 }
 
+const machineById = (id) => MACHINES.find((m) => m.id === id) ?? null;
+
+// The hash can hold a map item id (e.g. #i131) or a machine id (e.g. #treadmill).
 const idFromHash = () => {
   const id = decodeURIComponent(window.location.hash.replace(/^#/, ''));
-  return MACHINES.some((m) => m.id === id) ? id : null;
+  return MACHINES.some((m) => m.id === id) || ITEMS.some((it) => it.id === id) ? id : null;
 };
 
 export default function App() {
@@ -72,31 +77,43 @@ export default function App() {
     () => new Set(MACHINES.filter((m) => machineMatches(m, query, muscle)).map((m) => m.id)),
     [query, muscle],
   );
-  const selected = MACHINES.find((m) => m.id === selectedId) ?? null;
+  const matchedItemIds = useMemo(
+    () => new Set(ITEMS.filter((it) => itemMatches(it, machineById(it.machineId), query, muscle)).map((it) => it.id)),
+    [query, muscle],
+  );
   const listed = MACHINES.filter((m) => matchedIds.has(m.id));
-  const zoomed = selected && !closing && !reducedMotion() ? selected : null;
+
+  // selectedId is an item id (tapped on the map) or a machine id (picked from the list).
+  // selectedItem: the item to zoom to. selectedMachine: the machine info to show, if any.
+  const selectedItem =
+    ITEMS.find((it) => it.id === selectedId) ?? ITEMS.find((it) => it.machineId && it.machineId === selectedId) ?? null;
+  const selectedMachine = machineById(selectedId) ?? machineById(selectedItem?.machineId);
+  // Highlight the tapped item, plus every item of the same machine (e.g. all treadmills).
+  const isSelected = (item) =>
+    item.id === selectedItem?.id || (selectedMachine !== null && item.machineId === selectedMachine.id);
+  const zoomed = selectedItem && !closing && !reducedMotion() ? selectedItem : null;
 
   // On phones: bring the map to the top of the page (it peeks out above the bottom sheet)
-  // and scroll it sideways so the tapped machine is in view.
+  // and scroll it sideways so the tapped item is in view.
   useEffect(() => {
     const el = scrollRef.current;
-    if (!selected || !el || !isNarrow()) return;
+    if (!selectedItem || !el || !isNarrow()) return;
     const behavior = reducedMotion() ? 'auto' : 'smooth';
     const banner = document.querySelector('.proto-banner')?.offsetHeight ?? 0;
     const top = el.getBoundingClientRect().top + window.scrollY - banner - 8;
     window.scrollTo({ top, behavior });
     if (el.scrollWidth > el.clientWidth) {
-      const left = (selected.x / MAP_WIDTH) * el.scrollWidth - el.clientWidth / 2;
+      const left = ((selectedItem.x - VIEW.x) / VIEW.width) * el.scrollWidth - el.clientWidth / 2;
       el.scrollTo({ left, behavior });
     }
-  }, [selected]);
+  }, [selectedItem]);
 
   return (
     <div className="app">
       <div className="proto-banner" role="note">
-        Draft layout based on public info — may not match the actual UNF gym.{' '}
+        Layout approximate, being verified.{' '}
         <a href={FACILITY.feedbackUrl} target="_blank" rel="noopener noreferrer">
-          Help us fix it!
+          Spot something wrong? Tell us
         </a>
       </div>
 
@@ -151,7 +168,7 @@ export default function App() {
           </div>
           <p className="result-count" aria-live="polite">
             {filtering
-              ? `${matchedIds.size} of ${MACHINES.length} machines match — highlighted on the map`
+              ? `${matchedIds.size} of ${MACHINES.length} machines match · ${matchedItemIds.size} highlighted on the map`
               : `${MACHINES.length} machines`}
           </p>
         </section>
@@ -161,10 +178,10 @@ export default function App() {
             <div className="map-stage">
               <div className={`map-zoom ${zoomed ? 'is-zoomed' : ''}`} style={{ transform: zoomTransform(zoomed) }}>
                 <GymMap
-                  machines={MACHINES}
-                  matchedIds={matchedIds}
+                  items={ITEMS}
+                  matchedIds={matchedItemIds}
                   filtering={filtering}
-                  selectedId={selectedId}
+                  isSelected={isSelected}
                   onSelect={select}
                 />
               </div>
@@ -173,9 +190,10 @@ export default function App() {
           <p className="map-hint">Swipe sideways to see the whole floor on small screens.</p>
           <p className="legend">
             <span>
-              <strong>Draft:</strong> equipment is from public sources; most positions are guesses (“location: guess”).
+              <strong>Layout approximate, being verified:</strong> traced from the official floor plan and placed from a student’s
+              sketch. Positions and names may change.
             </span>
-            <span>Dashed green = outdoor balcony · Hatched = open atrium.</span>
+            <span>Red = restrooms / staff areas · Striped = stairs · Dots = building columns.</span>
           </p>
         </section>
 
@@ -210,7 +228,11 @@ export default function App() {
         Student-made draft · Not affiliated with or endorsed by UNF · Info from public UNF pages, UNF Spinnaker and photos · Videos are third-party YouTube content.
       </footer>
 
-      {selected && <MachineDetail machine={selected} closing={closing} onClose={closePanel} />}
+      {selectedMachine ? (
+        <MachineDetail machine={selectedMachine} closing={closing} onClose={closePanel} />
+      ) : (
+        selectedItem && <ItemDetail item={selectedItem} closing={closing} onClose={closePanel} />
+      )}
     </div>
   );
 }
