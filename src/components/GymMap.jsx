@@ -6,7 +6,7 @@ import { legendGroupOf } from '../legend.js';
 import { usePanZoom } from '../usePanZoom.js';
 
 const LABEL_PX = 11; // zone labels stay this size on screen at every zoom
-const ICON_MIN_SCALE = 4; // show machine icons once a foot is at least 4 px on screen
+const ICON_MIN_SCALE = 3; // show machine icons once a foot is at least 3 px on screen
 const FOCUS_ZOOM = 3; // zoom (× whole-floor view) when a machine is tapped
 const DRAWER_PX = 460; // desktop detail drawer width (see .detail in styles.css)
 
@@ -20,7 +20,9 @@ function placeLabels(items, scale) {
   const sorted = zoneLabels(items).sort((a, b) => b.count - a.count);
   for (const l of sorted) {
     const text = l.zone.replace(/\s*\(.*\)$/, ''); // drop "(…)" details to keep labels short
-    const box = { x: l.x - (text.length * size * 0.3), y: l.y - size, w: text.length * size * 0.6, h: size * 1.3 };
+    // rough text box: bold letters are about 0.7 × the font size wide
+    const w = text.length * size * 0.7;
+    const box = { x: l.x - w / 2, y: l.y - size * 1.1, w, h: size * 1.5 };
     const overlaps = placed.some((p) => box.x < p.box.x + p.box.w && p.box.x < box.x + box.w && box.y < p.box.y + p.box.h && p.box.y < box.y + box.h);
     if (!overlaps) placed.push({ ...l, text, box });
   }

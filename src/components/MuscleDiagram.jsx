@@ -5,6 +5,7 @@
  * Shapes are simple hand-drawn paths in a 120 × 240 box per figure. Only the LEFT half is drawn;
  * each shape is drawn again mirrored, so both sides always match.
  */
+import { muscleLevels } from '../muscleRegions.js';
 
 // Body regions, left half only. Coordinates: x 0–60 (60 = middle of the body), y 0–240.
 const FRONT = {
@@ -27,34 +28,6 @@ const BACK = {
 };
 // Parts that are never highlighted (head, neck, hands, knees, feet): just the outline.
 const NEUTRAL = 'M60 4 a14 15 0 1 0 0.01 0 Z M53 33 L59 33 L59 40 L53 40 Z M22 130 L32 130 L31 142 L21 141 Z M43 177 L56 177 L55 184 L42 184 Z M45 223 L54 223 L56 232 L42 232 Z';
-
-/** Muscle names in gymData.js → body regions. "Cardio" and "Mobility" have no region (shown as text). */
-const REGIONS_FOR_MUSCLE = {
-  Quads: ['quads'],
-  Hamstrings: ['hamstrings'],
-  Glutes: ['glutes'],
-  Hips: ['hips'],
-  Chest: ['chest'],
-  Back: ['back'],
-  Lats: ['lats'],
-  Shoulders: ['shoulders'],
-  Arms: ['arms'],
-  Core: ['core'],
-};
-const ALL_REGIONS = [...new Set([...Object.keys(FRONT), ...Object.keys(BACK)])];
-
-/**
- * region → 'primary' | 'secondary'. "Full Body" lightly fills every region; muscles that are
- * named directly still get their own level (so a squat shows quads and glutes strongest).
- */
-export function muscleLevels(muscles) {
-  const levels = {};
-  const fullBody = muscles.primary.includes('Full Body') || muscles.secondary.includes('Full Body');
-  if (fullBody) ALL_REGIONS.forEach((r) => (levels[r] = 'secondary'));
-  muscles.secondary.forEach((m) => (REGIONS_FOR_MUSCLE[m] ?? []).forEach((r) => (levels[r] ??= 'secondary')));
-  muscles.primary.forEach((m) => (REGIONS_FOR_MUSCLE[m] ?? []).forEach((r) => (levels[r] = 'primary')));
-  return levels;
-}
 
 function Figure({ regions, levels, label, offsetX }) {
   const halves = ['', 'translate(120 0) scale(-1 1)']; // left half, then the mirrored right half

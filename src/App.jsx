@@ -115,12 +115,12 @@ export default function App() {
           Layout file problems (dev only, see console): {LAYOUT_ERRORS.join(' · ')}
         </div>
       )}
-      <div className="proto-banner" role="note">
+      <aside className="proto-banner" aria-label="Layout notice">
         Layout approximate, being verified.{' '}
         <a href={FACILITY.feedbackUrl} target="_blank" rel="noopener noreferrer">
           Spot something wrong? Tell us
         </a>
-      </div>
+      </aside>
 
       <header className="header">
         <div className="header-inner">

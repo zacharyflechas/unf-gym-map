@@ -24,9 +24,9 @@ export default function MachineDetail({ machine, closing = false, onClose }) {
 
   return (
     <div className={`overlay ${closing ? 'is-closing' : ''}`} onClick={onClose}>
-      <aside className="detail" role="dialog" aria-modal="true" aria-labelledby="detail-title" onClick={(e) => e.stopPropagation()}>
+      <div className="detail" role="dialog" aria-modal="true" aria-labelledby="detail-title" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-handle" aria-hidden="true" />
-        <header className="detail-header">
+        <div className="detail-header">
           <div>
             <p className="detail-zone">{zoneName(machine.zone)}</p>
             <h2 id="detail-title">{machine.name}</h2>
@@ -34,7 +34,7 @@ export default function MachineDetail({ machine, closing = false, onClose }) {
           <button ref={closeRef} className="close-btn" onClick={onClose} aria-label="Close details">
             ✕
           </button>
-        </header>
+        </div>
 
         <div className="detail-body">
           <section className="card" aria-labelledby="muscles-title">
@@ -98,7 +98,7 @@ export default function MachineDetail({ machine, closing = false, onClose }) {
             approximate and still being verified.
           </p>
         </div>
-      </aside>
+      </div>
     </div>
   );
 }
