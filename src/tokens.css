@@ -31,7 +31,7 @@
 
   /* --- map --- */
   --map-floor: light-dark(#ffffff, #101a2c);
-  --map-dot: light-dark(#dde4ee, #24324a);
+  --map-dot: light-dark(#cfd8e4, #2a3a55);
   --map-wall: light-dark(#0b4f9c, #6c8fbf);
   --map-room: light-dark(#e6ecf3, #1c2a42);
   --map-room-line: light-dark(#8796a6, #4a5d7a);

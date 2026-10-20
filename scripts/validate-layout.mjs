@@ -6,6 +6,7 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { MACHINES } from '../src/data/gymData.js';
 import { validateLayout, validateBase } from '../src/layoutSchema.js';
+import { KNOWN_ZONES } from '../src/legend.js';
 
 const DATA = new URL('../src/data/', import.meta.url);
 const machineIds = MACHINES.map((m) => m.id);
@@ -38,7 +39,7 @@ for (const file of layoutFiles) {
     warnings.push(...b.warnings.map((w) => `${baseFile}: ${w}`));
   }
   if (!layout.parseError) {
-    const r = validateLayout(layout, { machineIds, base: base?.parseError ? null : base });
+    const r = validateLayout(layout, { machineIds, base: base?.parseError ? null : base, knownZones: KNOWN_ZONES });
     errors.push(...r.errors);
     warnings.push(...r.warnings);
   }

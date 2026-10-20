@@ -17,7 +17,7 @@
 
 export const FACILITY = {
   name: 'Dottie Dorion Fitness Center',
-  building: 'Student Wellness Complex (Bldg 61) · 2nd floor',
+  building: 'Student Wellness Complex (Bldg 61)',
   campus: 'University of North Florida',
   isDraft: true,
   feedbackUrl:

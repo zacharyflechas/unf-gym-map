@@ -12,17 +12,18 @@ import base3f from './data/base-3f.json';
 import layout3f from './data/layout-3f.json';
 import { MACHINES } from './data/gymData.js';
 import { normalizeLayout, validateBase, validateLayout } from './layoutSchema.js';
+import { KNOWN_ZONES } from './legend.js';
 
 /** Layout errors found in dev, shown in a red bar at the top of the page. Always empty in production. */
 export const LAYOUT_ERRORS = [];
 
-function makeLevel(id, label, name, base, rawLayout) {
+function makeLevel(id, label, title, name, base, rawLayout) {
   // During `npm run dev`, check the files and print any problems in the browser console.
   // (In a production build import.meta.env.DEV is false, so this block is removed; `npm run build`
   // runs the same checks in scripts/validate-layout.mjs instead and stops on errors.)
   if (import.meta.env.DEV) {
     const machineIds = MACHINES.map((m) => m.id);
-    const result = validateLayout(rawLayout, { machineIds, base });
+    const result = validateLayout(rawLayout, { machineIds, base, knownZones: KNOWN_ZONES });
     const baseResult = validateBase(base);
     const errors = [...baseResult.errors, ...result.errors];
     const warnings = [...baseResult.warnings, ...result.warnings];
@@ -31,12 +32,12 @@ function makeLevel(id, label, name, base, rawLayout) {
     LAYOUT_ERRORS.push(...errors.map((e) => `${label}: ${e}`));
   }
   const { meta, items } = normalizeLayout(rawLayout);
-  return { id, label, name, base, meta, items };
+  return { id, label, title, name, base, meta, items };
 }
 
 export const LEVELS = [
-  makeLevel('2f', '2F', '2nd floor · Gym', base2f, layout2f),
-  makeLevel('3f', '3F', '3rd floor · Track', base3f, layout3f),
+  makeLevel('2f', '2F', 'Gym', '2nd floor · Gym', base2f, layout2f),
+  makeLevel('3f', '3F', 'Track', '3rd floor · Track', base3f, layout3f),
 ];
 
 export const DEFAULT_LEVEL = LEVELS[0];

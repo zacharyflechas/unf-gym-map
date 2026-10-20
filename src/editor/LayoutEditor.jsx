@@ -10,8 +10,9 @@ import { useEffect, useRef, useState } from 'react';
 import { MACHINES } from '../data/gymData.js';
 import BaseMap from '../components/BaseMap.jsx';
 import { LEVELS, levelById } from '../levels.js';
-import { viewBoxOf, itemTransform, typeGroup } from '../layout.js';
+import { viewBoxOf, itemTransform } from '../layout.js';
 import { FORMAT_VERSION, SOURCE_VALUES, STATUS_VALUES, validateLayout } from '../layoutSchema.js';
+import { KNOWN_ZONES } from '../legend.js';
 import './editor.css';
 
 // The build check searches dist/ for this exact string; it must only ever exist in editor code.
@@ -90,7 +91,7 @@ export default function LayoutEditor() {
 
   const selected = items.find((it) => it.id === selectedId) ?? null;
   const differsFromFile = JSON.stringify(items) !== JSON.stringify(level.items);
-  const check = validateLayout({ meta: level.meta, items }, { machineIds: MACHINE_IDS, base: level.base });
+  const check = validateLayout({ meta: level.meta, items }, { machineIds: MACHINE_IDS, base: level.base, knownZones: KNOWN_ZONES });
 
   useEffect(() => {
     localStorage.setItem(storageKey(levelId), JSON.stringify(items));
@@ -334,7 +335,7 @@ export default function LayoutEditor() {
             <g
               key={item.id}
               data-id={item.id}
-              className={`ed-item item-${typeGroup(item.type)} status-${item.status} ${item.id === selectedId ? 'is-selected' : ''}`}
+              className={`ed-item status-${item.status} ${item.id === selectedId ? 'is-selected' : ''}`}
               transform={itemTransform(item)}
               onPointerDown={(e) => startMove(e, item)}
             >

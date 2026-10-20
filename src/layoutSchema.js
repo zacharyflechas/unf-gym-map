@@ -49,8 +49,9 @@ export function pointInPolygon([x, y], polygon) {
  *   raw        – the parsed JSON, any accepted shape
  *   machineIds – ids from gymData.js MACHINES (an item's machineId must be one of them)
  *   base       – the matching base-<level>.json; items outside base.outline (and base.balcony) give a warning
+ *   knownZones – zone names the map legend knows (src/legend.js); other zones give a warning
  */
-export function validateLayout(raw, { machineIds = [], base = null } = {}) {
+export function validateLayout(raw, { machineIds = [], base = null, knownZones = null } = {}) {
   const errors = [];
   const warnings = [];
   const isObject = raw !== null && typeof raw === 'object';
@@ -94,6 +95,10 @@ export function validateLayout(raw, { machineIds = [], base = null } = {}) {
 
     if (item.machineId !== undefined && !machineIds.includes(item.machineId)) {
       errors.push(`${label}: machineId "${item.machineId}" is not a machine in src/data/gymData.js.`);
+    }
+
+    if (knownZones && item.zone && !knownZones.includes(item.zone)) {
+      warnings.push(`${label}: zone "${item.zone}" is not in the map legend (src/legend.js), so it shows under "Other".`);
     }
 
     const placed = Number.isFinite(item.x) && Number.isFinite(item.y);
