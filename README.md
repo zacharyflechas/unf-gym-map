@@ -74,16 +74,13 @@ It returns 200 for a real, embeddable video and 401/404 otherwise. If you're not
 1. Push this repo to GitHub with `main` as the default branch.
 2. In the repo, go to **Settings → Pages → Build and deployment → Source** and choose **GitHub Actions**.
 3. Push to `main`, or run the workflow by hand. [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) builds with `npm ci && npm run build` and publishes `dist/`.
-4. The site will be at `https://<user>.github.io/<repo>/`.
+4. The site will be at `https://<user>.github.io/<repo>/`. For this repo that's https://zacharyflechas.github.io/unf-gym-map/.
 
 ### Vite `base` note
 
-Project Pages sites are served from a sub-path (`/<repo>/`), so asset URLs have to account for it. In [`vite.config.js`](vite.config.js), `base` defaults to `'./'` (relative paths), which works under any sub-path without changes. If you'd rather use absolute paths, either:
+Project Pages sites are served from a sub-path (`/<repo>/`), so built asset URLs must include it. The workflow builds with `VITE_BASE=/${{ github.event.repository.name }}/`, which is `/unf-gym-map/` for this repo. [`vite.config.js`](vite.config.js) reads that variable, and falls back to `'./'` (relative paths) for local builds. If you fork or rename the repo, the workflow picks up the new name automatically. For a user/org site (`<user>.github.io`) or a custom domain, use `VITE_BASE=/`.
 
-- set `base: '/<repo-name>/'` in `vite.config.js`, or
-- build with `VITE_BASE=/<repo-name>/ npm run build`. The workflow has a commented-out `env` line for this.
-
-For a user/org site (`<user>.github.io`) or a custom domain, `'/'` also works.
+Live prototype: https://zacharyflechas.github.io/unf-gym-map/
 
 ## Screenshots
 
