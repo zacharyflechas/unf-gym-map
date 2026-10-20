@@ -19,6 +19,7 @@ body { margin: 0; min-height: 100vh; }
 body.no-scroll { overflow: hidden; }
 button { font: inherit; cursor: pointer; }
 
+.proto-banner a { color: #fff; font-weight: 700; text-decoration: underline; }
 .proto-banner {
   background: var(--gray);
   color: #fff;
@@ -116,6 +117,12 @@ button { font: inherit; cursor: pointer; }
 .wall { fill: none; stroke: var(--navy-dark); stroke-width: 8; }
 .zone { stroke: #c9d3dd; stroke-width: 1.5; }
 .zone-label { font-size: 15px; font-weight: 800; fill: var(--gray); letter-spacing: 0.08em; }
+.zone-conf { font-size: 12px; font-style: italic; fill: #8a96a1; }
+.zone-outdoor .zone { stroke: #8bb07a; stroke-width: 2.5; stroke-dasharray: 10 7; }
+.zone-void .zone { stroke: #c9d3dd; stroke-dasharray: 4 4; }
+.rack { fill: #fff; stroke: var(--gray); stroke-width: 2.5; }
+.platform { fill: #2b3a48; opacity: 0.18; }
+.window-strip { fill: #bcd6ee; }
 .entrance-label { font-size: 16px; font-weight: 700; fill: var(--navy); }
 .footprint { fill: #fff; stroke: #c4ced8; stroke-width: 2; }
 .bar { stroke: var(--gray); stroke-width: 5; stroke-linecap: round; }
@@ -128,7 +135,7 @@ button { font: inherit; cursor: pointer; }
 .marker-short { fill: #fff; font-size: 18px; font-weight: 800; pointer-events: none; }
 .marker-name {
   fill: var(--text);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   paint-order: stroke;
   stroke: #fff;
@@ -420,3 +427,16 @@ button { font: inherit; cursor: pointer; }
   .map-zoom { transform: none !important; }
   .marker:hover .marker-lift, .marker:hover .lift-shadow, .machine-row:hover { transform: none !important; }
 }
+
+/* ---------- draft info ---------- */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 8px 4px 0; font-size: 0.8rem; color: var(--gray); }
+.legend strong { color: var(--text); }
+.draft-info { margin-top: 18px; padding: 12px; border-radius: 10px; background: #fff8e1; border: 1px solid #f2d27a; font-size: 0.86rem; line-height: 1.45; }
+.draft-info h3 { margin-top: 0 !important; color: #7a5a00 !important; }
+.draft-info p { margin: 6px 0; }
+.draft-info ul { margin: 6px 0 0; padding-left: 1.2em; }
+.draft-info a { color: var(--navy); }
+.conf { display: inline-block; padding: 1px 8px; border-radius: 999px; font-weight: 700; font-size: 0.75rem; }
+.conf-high { background: #d8f0dd; color: #1f6b32; }
+.conf-medium { background: #fdecc8; color: #8a5a00; }
+.conf-low { background: #f8d9d9; color: #8f2626; }

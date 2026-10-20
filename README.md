@@ -2,7 +2,7 @@
 
 An interactive, mobile-friendly gym floor map for students. Tap a machine to see the muscles it works, short how-to steps, tips, and an embedded YouTube tutorial.
 
-> **Prototype:** the layout is an example, **not** the actual UNF Student Wellness / Rec Center floor plan. It is not affiliated with or endorsed by UNF, and it uses no UNF logos.
+> **Draft:** on the `unf-layout-draft` branch, the map is a best-effort draft of the **Dottie Dorion Fitness Center** (2nd floor, Student Wellness Complex, Building 61). It is built from public sources only. The equipment list is mostly sourced, but most **positions are guesses**. Each zone and machine carries `confidence` / `locationConfidence` / `sources` fields. See [`docs/unf-draft-findings.md`](docs/unf-draft-findings.md) for all sources. This project is not affiliated with or endorsed by UNF and uses no UNF logos. **Corrections are welcome:** open an issue.
 
 ![Desktop map](screenshots/01-desktop-map.png)
 
@@ -57,6 +57,8 @@ The map uses a **1000 × 700** coordinate grid. `x` runs from the left wall (0) 
 }
 ```
 
+- Draft-only fields (optional): `mapLabel` (shorter label drawn on the map), `confidence` (does it exist?), `locationConfidence` (is it really here?), `note`, `sources` (keys into `SOURCES`). The zone fields `kind: 'outdoor' | 'void'` and `label` work the same way. The detail panel shows these in an "About this draft entry" box.
+- `FACILITY`: the facility name/building shown in the header, and the feedback link.
 - `MUSCLE_GROUPS`: the filter chips. Use the same spellings in `muscles` so the chips match.
 
 To drop in the real UNF layout:

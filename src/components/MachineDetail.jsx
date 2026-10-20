@@ -1,5 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { zoneName } from '../matching.js';
+import { SOURCES, FACILITY } from '../data/gymData.js';
+
+const Conf = ({ level }) => <span className={`conf conf-${level}`}>{level}</span>;
 
 export default function MachineDetail({ machine, closing = false, onClose }) {
   const closeRef = useRef(null);
@@ -98,6 +101,34 @@ export default function MachineDetail({ machine, closing = false, onClose }) {
                 ))}
               </ul>
             </>
+          )}
+          {machine.confidence && (
+            <section className="draft-info" aria-label="About this draft entry">
+              <h3>About this draft entry</h3>
+              <p>
+                Exists at the DDFC: <Conf level={machine.confidence} /> · Location on map:{' '}
+                <Conf level={machine.locationConfidence} />
+              </p>
+              {machine.note && <p>{machine.note}</p>}
+              {machine.sources?.length > 0 && (
+                <ul>
+                  {machine.sources.map((k) =>
+                    SOURCES[k] ? (
+                      <li key={k}>
+                        <a href={SOURCES[k].url} target="_blank" rel="noopener noreferrer">
+                          {SOURCES[k].title}
+                        </a>
+                      </li>
+                    ) : null,
+                  )}
+                </ul>
+              )}
+              <p>
+                <a href={FACILITY.feedbackUrl} target="_blank" rel="noopener noreferrer">
+                  Know where this really is? Help us fix it →
+                </a>
+              </p>
+            </section>
           )}
           <p className="disclaimer">
             General guidance only. Start light, and ask Rec Center staff if you’re unsure how to use a machine.
