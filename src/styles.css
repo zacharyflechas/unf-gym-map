@@ -109,45 +109,43 @@ button { font: inherit; cursor: pointer; }
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 .map-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; }
-.map-stage { position: relative; min-width: 640px; overflow: hidden; border-radius: 10px; }
+.map-stage { position: relative; min-width: 900px; overflow: hidden; border-radius: 10px; }
 .map-zoom { transform-origin: 0 0; }
 .gym-map { display: block; width: 100%; height: auto; user-select: none; -webkit-tap-highlight-color: transparent; }
 .map-hint { display: none; margin: 6px 4px 0; font-size: 0.8rem; color: var(--gray); }
 
-.wall { fill: none; stroke: var(--navy-dark); stroke-width: 8; }
-.zone { stroke: #c9d3dd; stroke-width: 1.5; }
-.zone-label { font-size: 15px; font-weight: 800; fill: var(--gray); letter-spacing: 0.08em; }
-.zone-conf { font-size: 12px; font-style: italic; fill: #8a96a1; }
-.zone-outdoor .zone { stroke: #8bb07a; stroke-width: 2.5; stroke-dasharray: 10 7; }
-.zone-void .zone { stroke: #c9d3dd; stroke-dasharray: 4 4; }
-.rack { fill: #fff; stroke: var(--gray); stroke-width: 2.5; }
-.platform { fill: #2b3a48; opacity: 0.18; }
-.window-strip { fill: #bcd6ee; }
-.entrance-label { font-size: 16px; font-weight: 700; fill: var(--navy); }
-.footprint { fill: #fff; stroke: #c4ced8; stroke-width: 2; }
-.bar { stroke: var(--gray); stroke-width: 5; stroke-linecap: round; }
-
-.marker { cursor: pointer; outline: none; }
-.marker .hit { fill: transparent; }
-.marker-dot { fill: var(--navy); stroke: #fff; stroke-width: 3; }
-.marker-sheen { fill: #fff; opacity: 0.08; pointer-events: none; }
-.lift-shadow { fill: #0b2545; opacity: 0.18; }
-.marker-short { fill: #fff; font-size: 18px; font-weight: 800; pointer-events: none; }
-.marker-name {
-  fill: var(--text);
-  font-size: 14px;
-  font-weight: 700;
+/* Base map (traced floor plan, units = feet) */
+.base-rec { fill: #eef3f8; stroke: var(--navy-dark); stroke-width: 0.8; stroke-linejoin: round; }
+.base-room { fill: #e3eaf2; stroke: #8796a6; stroke-width: 0.35; }
+.base-facility { fill: #f4dede; stroke: #b48a8a; stroke-width: 0.35; }
+.base-stair { fill: url(#stair-hatch); stroke: #6b7785; stroke-width: 0.35; }
+.base-balcony { fill: #eef6ea; stroke: #8bb07a; stroke-width: 0.6; stroke-dasharray: 2 1.2; }
+.base-column { fill: #fff; stroke: #6b7785; stroke-width: 0.35; }
+.base-label { font-size: 4px; font-weight: 700; fill: #6a8f5a; }
+.zone-label {
+  font-size: 4.2px;
+  font-weight: 800;
+  fill: var(--gray);
   paint-order: stroke;
   stroke: #fff;
-  stroke-width: 4px;
+  stroke-width: 1px;
   stroke-linejoin: round;
-  pointer-events: none;
+  pointer-events: none; /* labels sit on top of items; let taps through */
 }
-.marker:focus-visible .marker-dot { stroke: var(--accent); stroke-width: 5; }
-.marker.is-match .marker-dot { stroke: var(--accent); stroke-width: 6; }
-.marker.is-selected .marker-dot { fill: var(--accent); stroke: var(--navy); stroke-width: 5; }
-.marker.is-selected .marker-short { fill: var(--navy-dark); }
-.glow { pointer-events: none; }
+
+/* Equipment items (sizes in feet) */
+.item { cursor: pointer; outline: none; }
+.item-hit { fill: transparent; }
+.item-shape { fill: var(--navy); stroke: #fff; stroke-width: 0.3; }
+.item-cardio .item-shape { fill: #2f7bbf; }
+.item-rack .item-shape { fill: var(--navy-dark); }
+.item-weights .item-shape { fill: #56657a; }
+.item-rig .item-shape { fill: #c9d6e6; stroke: var(--navy); stroke-width: 0.5; }
+.item-desk .item-shape { fill: #7a5a00; }
+.item:hover .item-shape { stroke: var(--accent); stroke-width: 0.6; }
+.item:focus-visible .item-shape { stroke: var(--accent); stroke-width: 0.9; }
+.item.is-match .item-shape { stroke: var(--accent); stroke-width: 0.9; }
+.item.is-selected .item-shape { fill: var(--accent); stroke: var(--navy-dark); stroke-width: 0.6; }
 
 /* ---------- list ---------- */
 .list-card {
@@ -313,7 +311,6 @@ button { font: inherit; cursor: pointer; }
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   /* Spring fallback (single overshoot) for browsers without linear() */
   --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
-  --pop: cubic-bezier(0.34, 1.7, 0.6, 1);
 }
 @supports (animation-timing-function: linear(0, 1)) {
   :root {
@@ -326,47 +323,15 @@ button { font: inherit; cursor: pointer; }
   }
 }
 
-/* 1. Load sequence: zones fade in, then footprints, then markers pop in one by one. */
-.zone-group { animation: zone-in 0.5s var(--ease-out) backwards; animation-delay: calc(var(--i) * 70ms); }
-@keyframes zone-in { from { opacity: 0; } }
-
-.footprint-group { animation: fade-in 0.4s ease-out backwards; animation-delay: calc(300ms + var(--i) * 40ms); }
+/* 1. Load sequence: items fade in one after another. */
+.item { animation: fade-in 0.4s ease-out backwards; animation-delay: calc(var(--i) * 4ms); }
 @keyframes fade-in { from { opacity: 0; } }
 
-.marker-pop {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: marker-pop 0.55s var(--pop) backwards; /* 'backwards' only, so hover transforms work afterwards */
-  animation-delay: calc(420ms + var(--i) * 55ms);
-}
-@keyframes marker-pop {
-  from { opacity: 0; transform: scale(0.2); }
-  60% { opacity: 1; }
-}
-.marker-name { animation: fade-in 0.4s ease-out backwards; animation-delay: calc(560ms + var(--i) * 55ms); }
-
 /* Dimming non-matches on search */
-.marker { transition: opacity 0.25s ease; }
-.marker.is-dim { opacity: 0.22; }
+.item { transition: opacity 0.25s ease; }
+.item.is-dim { opacity: 0.22; }
 
-/* 2. Smooth glow pulse on search matches */
-.glow {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: glow 2s ease-in-out infinite;
-}
-@keyframes glow {
-  0%, 100% { opacity: 0.35; transform: scale(0.85); }
-  50% { opacity: 0.95; transform: scale(1.08); }
-}
-
-.marker-lift, .lift-shadow { transform-box: fill-box; transform-origin: center; }
-
-/* Selected marker: small confirming bounce */
-.marker.is-selected .marker-lift { animation: select-bounce 0.5s var(--pop); }
-@keyframes select-bounce { 0% { transform: scale(0.85); } 100% { transform: scale(1); } }
-
-/* 3. Zoom/pan toward the tapped machine (transform tween on a wrapper; tap targets scale with it). */
+/* 3. Zoom/pan toward the tapped item (transform tween on a wrapper; tap targets scale with it). */
 .map-zoom { transition: transform 0.65s var(--ease-out); }
 .map-zoom.is-zoomed { transition-duration: 0.7s; }
 
@@ -398,23 +363,13 @@ button { font: inherit; cursor: pointer; }
   @keyframes sheet-out { to { transform: translateY(100%); } }
 }
 
-/* 5. Desktop-only hover lift + tilt (pointer devices). SVG children don't support real
-      perspective, so the "3D" feel comes from lift + slight rotate + a shadow that spreads. */
+/* 5. Desktop-only hover lift on list rows (pointer devices). */
 @media (hover: hover) and (pointer: fine) {
-  .marker-lift,
-  .lift-shadow {
-    transition: transform 0.35s var(--pop), opacity 0.35s ease;
-  }
-  .marker:hover .marker-lift { transform: translateY(-6px) rotate(-6deg) scale(1.1); }
-  .marker:hover .lift-shadow { transform: translateY(6px) scale(1.15, 1.3); opacity: 0.28; }
-  .marker-dot { transition: fill 0.2s ease; }
-  .marker:hover .marker-dot { fill: var(--navy-dark); }
-  .marker.is-selected:hover .marker-dot { fill: var(--accent); }
   .machine-row { transition: transform 0.2s var(--ease-out), border-color 0.2s; }
   .machine-row:hover { transform: translateY(-2px); }
 }
 
-/* 6. Reduced motion: no movement; keep only instant state changes (and a static glow). */
+/* 6. Reduced motion: no movement; keep only instant state changes. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -423,9 +378,8 @@ button { font: inherit; cursor: pointer; }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .glow { animation: none !important; opacity: 0.7; }
   .map-zoom { transform: none !important; }
-  .marker:hover .marker-lift, .marker:hover .lift-shadow, .machine-row:hover { transform: none !important; }
+  .machine-row:hover { transform: none !important; }
 }
 
 /* ---------- draft info ---------- */

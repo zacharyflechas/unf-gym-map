@@ -13,3 +13,17 @@ export function machineMatches(machine, query, muscle) {
 }
 
 export { zoneName };
+
+/**
+ * Does a layout item (from layout-2f.json) match the search?
+ * - If it is linked to a machine (machineId), it matches whenever that machine does.
+ * - Otherwise only the text search can match it (by item name or zone); a muscle filter can't,
+ *   because unlinked items have no muscle info yet.
+ */
+export function itemMatches(item, machine, query, muscle) {
+  if (machine && machineMatches(machine, query, muscle)) return true;
+  if (muscle) return false;
+  const q = query.trim().toLowerCase();
+  const haystack = `${item.name} ${item.zone}`.toLowerCase();
+  return q !== '' && q.split(/\s+/).every((term) => haystack.includes(term));
+}

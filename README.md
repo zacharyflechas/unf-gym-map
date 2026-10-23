@@ -8,18 +8,18 @@ An interactive, mobile-friendly gym floor map for students. Tap a machine to see
 
 ## Features
 
-- Top-down SVG floor map with zones (Cardio, Selectorized Machines, Racks & Benches, Cable Station, Free Weights) and clickable machine markers (mouse, touch, and keyboard: Tab + Enter).
+- Top-down SVG floor map of the 2nd floor, traced from the official plan (units: feet), with every piece of equipment drawn at its approximate size and clickable (mouse, touch, and keyboard: Tab + Enter). The layout is approximate and still being verified.
 - Detail panel: a right-hand drawer on desktop and a bottom sheet on phones. It shows primary/secondary muscles, how-to steps, tips, and a privacy-enhanced `youtube-nocookie.com` embed. If a machine has no `youtubeId`, the panel shows a YouTube search link instead.
 - Search by machine name, zone, or muscle, plus one-tap muscle-group chips. Matching machines are highlighted on the map with a gold ring and the rest are dimmed.
 - A machine list under the map for big, easy tap targets on phones. On narrow screens the map scrolls sideways.
 - Deep links: the URL hash holds the open machine (e.g. `…/#leg-press`). You could print these as QR codes and stick them on the real machines.
 - No backend: it builds to a static site.
 - Motion, all in plain CSS (transform/opacity only, no animation library):
-  - **Load sequence:** the zones fade in, then markers pop in one after another.
-  - **Search matches:** a soft gold glow pulses around them. The glow is a radial gradient, not an animated blur filter.
+  - **Load sequence:** the equipment fades in one item after another.
+  - **Search matches:** matching items get a gold outline and the rest are dimmed.
   - **Zoom on tap:** the map zooms and pans toward the tapped machine and zooms back out when the panel closes. This is a CSS transform tween on a wrapper, so the horizontal scroll and tap targets still work. On phones the page also scrolls so the zoomed map shows above the bottom sheet.
   - **Panel:** the drawer (desktop) or bottom sheet (phone) springs in using CSS `linear()` spring easing, with a cubic-bezier fallback for older browsers. The backdrop fades.
-  - **Hover lift:** on desktop, markers lift and tilt on hover. This only applies under `@media (hover: hover) and (pointer: fine)`.
+  - **Hover lift:** on desktop, list rows lift on hover. This only applies under `@media (hover: hover) and (pointer: fine)`.
   - **Reduced motion:** with `prefers-reduced-motion: reduce`, all of the above is turned off and the map doesn't zoom.
 
 ## Run locally
@@ -35,37 +35,32 @@ npm run preview    # serve dist/ at http://localhost:4173
 
 ## Edit the gym data
 
-**All content lives in one file: [`src/data/gymData.js`](src/data/gymData.js).** You don't need to touch any component to change the layout.
+The data is split into **where things are** and **what they are**:
 
-The map uses a **1000 × 700** coordinate grid. `x` runs from the left wall (0) to the right wall (1000). `y` runs from the back wall (0) to the entrance side (700).
+- **[`src/data/layout-2f.json`](src/data/layout-2f.json)** holds where every item on the 2nd floor sits. Each item is `{ id, name, type, zone, x, y, rotation, width, depth, status, notes, machineId? }`:
+  - Units are **feet**. `x`, `y` are the item's center and `rotation` is in degrees clockwise.
+  - `status` is one of `guess | sketch | photo-verified | scan-verified`.
+  - `machineId` (optional) links the item to an entry in `gymData.js` so tapping it shows muscles, how-to and video. Items without one show a simple "no info yet" panel.
+- **[`src/data/base-2f.json`](src/data/base-2f.json)** is the floor plan traced from the official 2nd-floor plan: rec-area outline, rooms, stairs, balcony and structural columns, all in feet. The scale is an **estimate** (28 ft column bay) until a wall is measured.
+- **[`src/data/gymData.js`](src/data/gymData.js)** holds what each machine is: `MACHINES` (muscles, steps, tips, `youtubeId`), `ZONES` (names), `MUSCLE_GROUPS` (filter chips) and `FACILITY` (header text, feedback link).
 
-- `ZONES`: rectangles `{ id, name, x, y, width, height, color }`.
-- `MACHINES`: one object per machine:
+Moving a machine only changes `layout-2f.json`. No component code changes.
 
-```js
-{
-  id: 'leg-press',            // unique, URL-safe (used in #hash links)
-  name: 'Leg Press',
-  short: 'LP',                // 2–4 chars drawn inside the marker
-  zone: 'machines',           // must match a ZONES id
-  x: 100, y: 280,             // marker center on the 1000×700 grid
-  muscles: { primary: ['Quads', 'Glutes'], secondary: ['Hamstrings', 'Calves'] },
-  steps: ['…', '…'],
-  tips: ['…'],
-  youtubeId: 'sp5lOlwj0mI',   // or null → shows a "Search YouTube" link
-  youtubeSearch: '…',         // optional custom search text when youtubeId is null
-}
+### Layout editor (dev only)
+
+```bash
+npm run dev
+# open http://localhost:5173/?edit=1
 ```
 
-- Draft-only fields (optional): `mapLabel` (shorter label drawn on the map), `confidence` (does it exist?), `locationConfidence` (is it really here?), `note`, `sources` (keys into `SOURCES`). The zone fields `kind: 'outdoor' | 'void'` and `label` work the same way. The detail panel shows these in an "About this draft entry" box.
-- `FACILITY`: the facility name/building shown in the header, and the feedback link.
-- `MUSCLE_GROUPS`: the filter chips. Use the same spellings in `muscles` so the chips match.
+- **Drag** an item to move it. **Drag the yellow dot** to rotate it (hold Shift for 15° steps).
+- **Arrow keys** nudge the selected item 0.5 ft (Shift = 5 ft).
+- Click an item to edit its **name, type, zone, status, linked machine, size and notes**. Use **Add item** and **Delete item** to add or remove items.
+- **Official plan underlay**: put `plan-2f-straightened.jpg` in [`dev-assets/`](dev-assets/README.md) and toggle it on to see the official plan under the map. The image is git-ignored and never published.
+- Edits autosave in your browser (localStorage). **Reset** goes back to the file.
+- **Export JSON** downloads `layout-2f.json`. Replace `src/data/layout-2f.json` with it and open a PR.
 
-To drop in the real UNF layout:
-
-1. Sketch the floor on the 1000×700 grid. A photo of the posted floor plan with a grid overlay works well.
-2. Update `ZONES`.
-3. Move, add, or remove `MACHINES` entries.
+The editor is loaded with a dynamic `import()` behind `import.meta.env.DEV` (see [`src/main.jsx`](src/main.jsx)), so it is not part of `npm run build`. To check: `npm run build && grep -r LAYOUT_EDITOR_MARKER dist/` should print nothing.
 
 **Adding a video:** check that the ID exists by opening
 `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=VIDEO_ID&format=json`.

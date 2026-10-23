@@ -1,24 +1,19 @@
 /**
  * ============================================================
- *  GYM DATA — the only file you need to edit for a new layout
+ *  GYM DATA — what each machine is (muscles, how-to, video)
  * ============================================================
  *
- * DRAFT: Dottie Dorion Fitness Center (DDFC), 2nd floor of the UNF Student Wellness
- * Complex (Building 61). Built from PUBLIC sources only (see SOURCES below and
- * /unf-gym-research/findings.md). No official floor plan was found, so:
- *   - WHAT equipment/zones exist is mostly sourced (see `confidence`).
- *   - WHERE things are is mostly a GUESS (see `locationConfidence`), except where a
- *     photo shows it (e.g. half racks along exterior windows).
- * Please correct positions with first-hand knowledge!
+ * WHERE things are no longer lives here. Positions are in src/data/layout-2f.json (feet, edited
+ * with the dev-only ?edit=1 editor); a layout item points at a machine below via `machineId`.
  *
- * Coordinate grid: MAP_WIDTH x MAP_HEIGHT units (0,0 = top-left). Orientation is unknown.
+ * DDFC (Dottie Dorion Fitness Center), 2nd floor of the UNF Student Wellness Complex (Building 61).
+ * Content built from PUBLIC sources (see SOURCES below and docs/unf-draft-findings.md).
  *
- * ZONES: { id, name, label? (short map label), x, y, width, height, color, kind?, confidence, locationConfidence, note, sources }
- *   kind: 'floor' (default) | 'outdoor' (dashed outline) | 'void' (hatched, not walkable)
- * MACHINES: { id, name, mapLabel? (short label drawn on the map), short, zone, x, y, muscles: {primary, secondary}, steps, tips,
+ * ZONES: { id, name, confidence, locationConfidence, note, sources }  (used for names in the list/panel)
+ * MACHINES: { id, name, short, zone, muscles: {primary, secondary}, steps, tips,
  *             youtubeId|null, youtubeSearch?, confidence, locationConfidence, note, sources }
  *   confidence         – how sure we are this equipment EXISTS at the DDFC
- *   locationConfidence – how sure we are about WHERE it is on the map
+ *   locationConfidence – (old draft) how sure the old guessed position was; shown in the panel until Spec 02 removes it
  *   youtubeId          – only IDs verified via YouTube oEmbed (HTTP 200); else null → search link
  */
 
@@ -30,9 +25,6 @@ export const FACILITY = {
   feedbackUrl:
     'https://github.com/zacharyflechas/unf-gym-map/issues/new?title=Layout%20correction&body=What%20is%20wrong%20or%20missing%3F%0A%0AWhere%20is%20it%20actually%3F',
 };
-
-export const MAP_WIDTH = 1000;
-export const MAP_HEIGHT = 840;
 
 /** Public sources referenced by `sources: [...]` keys below. */
 export const SOURCES = {
@@ -50,63 +42,60 @@ export const SOURCES = {
 
 export const ZONES = [
   {
-    id: 'cardio', name: 'Cardio', x: 20, y: 20, width: 670, height: 130, color: '#E3EEF8',
+    id: 'cardio', name: 'Cardio',
     confidence: 'high', locationConfidence: 'medium',
     note: 'Official: an “expansive cardio area” with the balcony just off it; several cardio areas with different views. Photos show rows of treadmills/steppers/ellipticals facing large windows under the 3rd-floor track overhang. Which wall: unknown. Cardio is also “interspersed” elsewhere (integrated floor plan).',
     sources: ['swc', 'ddfc', 'photos'],
   },
   {
-    id: 'patio', name: 'Outdoor Balcony', x: 710, y: 20, width: 270, height: 130, color: '#EEF6EA', kind: 'outdoor',
+    id: 'patio', name: 'Outdoor Balcony',
     confidence: 'high', locationConfidence: 'low',
     note: 'Official: outdoor multi-use balcony “just off of the expansive cardio area”, also used for outdoor group fitness. Rowers, air bikes and light equipment allowed; no heavy equipment/slamming. Exact side: guess.',
     sources: ['swc', 'policies'],
   },
   {
-    id: 'atrium', name: 'Atrium (open)', x: 20, y: 170, width: 150, height: 370, color: '#F3F4F6', kind: 'void',
+    id: 'atrium', name: 'Atrium (open)',
     confidence: 'medium', locationConfidence: 'low',
     note: 'The 34-ft climbing wall rises from the 1st floor to track level and the track “gives views of the fitness level, atrium”. Size/position of the opening on the 2nd floor: guess.',
     sources: ['swc', 'arch'],
   },
   {
-    id: 'machines', name: 'Machines (selectorized + plate-loaded)', label: 'Machines', x: 190, y: 170, width: 450, height: 370, color: '#EEF1F4',
+    id: 'machines', name: 'Machines (selectorized + plate-loaded)',
     confidence: 'high', locationConfidence: 'low',
     note: 'Leg press, leg extension, hip abductor/adductor and “many other machines” (2016). ~2012 photos show blue/black plate-loaded machines and Power Lift units in the open central floor; the current SWC web-page banner photo (undated) shows machines under a curved “University of North Florida” soffit. Arrangement here: guess.',
     sources: ['spin2016', 'arch', 'swc'],
   },
   {
-    id: 'racks', name: 'Half Racks (×9) + Platforms', label: 'Half Racks + Platforms', x: 660, y: 170, width: 320, height: 370, color: '#E6EBF0',
+    id: 'racks', name: 'Half Racks (×9) + Platforms',
     confidence: 'high', locationConfidence: 'medium',
     note: '9 matching half-racks with inlay lifting platforms (Jan 2024) on 4-layer impact flooring. Photos: two facing rows of racks with a center aisle of “North Florida” inlay platforms, one row against floor-to-ceiling exterior windows overlooking a stadium. Which side of the building: unknown.',
     sources: ['ribbon', 'spin2024', 'spin2023', 'ddfc', 'photos'],
   },
   {
-    id: 'cozy', name: 'Cozy Corner', x: 20, y: 560, width: 230, height: 260, color: '#EAF0F7',
+    id: 'cozy', name: 'Cozy Corner',
     confidence: 'high', locationConfidence: 'low',
     note: 'Official: “a non-intimidating small fitness center within the larger fitness center” with the Nautilus One circuit, a light dumbbell area, a stretch area and some cardio. Students describe it as “tucked away in a corner”. Which corner: guess.',
     sources: ['ddfc', 'spin2016'],
   },
   {
-    id: 'playground', name: '“Playground” (Synergy 360)', label: 'Playground', x: 270, y: 560, width: 190, height: 260, color: '#F6EEE4',
+    id: 'playground', name: '“Playground” (Synergy 360)',
     confidence: 'high', locationConfidence: 'low',
     note: 'Official: functional training area featuring the Life Fitness Synergy 360, nicknamed the Playground. A ~2012 photo shows a red/black rig in the central open floor. Position: guess.',
     sources: ['ddfc', 'arch'],
   },
   {
-    id: 'free-weights', name: 'Dumbbells & Benches', label: 'Dumbbells', x: 480, y: 560, width: 160, height: 260, color: '#DFE6EE',
+    id: 'free-weights', name: 'Dumbbells & Benches',
     confidence: 'high', locationConfidence: 'low',
     note: 'Official: a main heavier dumbbell area plus 4 separate light dumbbell areas; “benches galore” and barbell benches (policies). Rubber free-weight area is 6,900 sq ft. Position: guess.',
     sources: ['ddfc', 'policies', 'spin2016', 'ribbon'],
   },
   {
-    id: 'crossprey', name: 'Crossprey-Fit', x: 660, y: 560, width: 320, height: 260, color: '#E9EEF5',
+    id: 'crossprey', name: 'Crossprey-Fit',
     confidence: 'high', locationConfidence: 'low',
     note: 'Official: custom monkey bars, 2 Olympic platforms and a slam wall. Policies: wall balls and handstand push-ups must be done here; no barbell lifts in its open space. Position: guess.',
     sources: ['ddfc', 'policies'],
   },
 ];
-
-/** Where people come in. The real position of the stairs/elevator from the lobby is unknown. */
-export const ENTRANCE = { x: 500, label: 'Stairs from lobby (position unknown)' };
 
 export const MUSCLE_GROUPS = [
   'Quads', 'Hamstrings', 'Glutes', 'Hips', 'Chest', 'Back', 'Lats', 'Shoulders',
@@ -118,7 +107,7 @@ const S_MACHINES = 'Exact brand/position unknown.';
 export const MACHINES = [
   // ---------------- CARDIO ----------------
   {
-    id: 'treadmill', name: 'Treadmills', short: 'TM', zone: 'cardio', x: 165, y: 100,
+    id: 'treadmill', name: 'Treadmills', short: 'TM', zone: 'cardio',
     muscles: { primary: ['Cardio', 'Quads'], secondary: ['Hamstrings', 'Glutes', 'Core'] },
     steps: [
       'Clip the safety key to your clothing.',
@@ -133,7 +122,7 @@ export const MACHINES = [
     sources: ['spin2016', 'ribbon', 'photos'],
   },
   {
-    id: 'stepmill', name: 'Step Mills', short: 'ST', zone: 'cardio', x: 280, y: 100,
+    id: 'stepmill', name: 'Step Mills', short: 'ST', zone: 'cardio',
     muscles: { primary: ['Cardio', 'Glutes', 'Quads'], secondary: ['Hamstrings', 'Core'] },
     steps: [
       'Hold the rails and step onto the stairs.',
@@ -148,7 +137,7 @@ export const MACHINES = [
     sources: ['ribbon', 'spin2016', 'photos'],
   },
   {
-    id: 'elliptical', name: 'Ellipticals', short: 'EL', zone: 'cardio', x: 395, y: 100,
+    id: 'elliptical', name: 'Ellipticals', short: 'EL', zone: 'cardio',
     muscles: { primary: ['Cardio', 'Quads', 'Glutes'], secondary: ['Hamstrings', 'Chest', 'Back'] },
     steps: [
       'Hold the fixed handles and step onto the lowest pedal.',
@@ -163,7 +152,7 @@ export const MACHINES = [
     sources: ['spin2016', 'photos'],
   },
   {
-    id: 'bike', name: 'Bikes', short: 'BK', zone: 'cardio', x: 510, y: 100,
+    id: 'bike', name: 'Bikes', short: 'BK', zone: 'cardio',
     muscles: { primary: ['Cardio', 'Quads'], secondary: ['Hamstrings', 'Glutes'] },
     steps: [
       'Adjust the seat so your knee is slightly bent at the bottom of the stroke.',
@@ -178,7 +167,7 @@ export const MACHINES = [
     sources: ['spin2016'],
   },
   {
-    id: 'rower', name: 'Rowing Machines', mapLabel: 'Rowers', short: 'RW', zone: 'cardio', x: 625, y: 100,
+    id: 'rower', name: 'Rowing Machines', short: 'RW', zone: 'cardio',
     muscles: { primary: ['Cardio', 'Back', 'Quads'], secondary: ['Glutes', 'Hamstrings', 'Arms', 'Core'] },
     steps: [
       'Strap feet in across the widest part of the foot.',
@@ -194,7 +183,7 @@ export const MACHINES = [
 
   // ---------------- MACHINES ----------------
   {
-    id: 'leg-press', name: 'Leg Press', short: 'LP', zone: 'machines', x: 250, y: 260,
+    id: 'leg-press', name: 'Leg Press', short: 'LP', zone: 'machines',
     muscles: { primary: ['Quads', 'Glutes'], secondary: ['Hamstrings'] },
     steps: [
       'Sit with back and hips flat on the pad, feet hip-width in the middle of the platform.',
@@ -209,7 +198,7 @@ export const MACHINES = [
     sources: ['spin2016'],
   },
   {
-    id: 'leg-extension', name: 'Leg Extension', mapLabel: 'Leg Ext.', short: 'LE', zone: 'machines', x: 360, y: 260,
+    id: 'leg-extension', name: 'Leg Extension', short: 'LE', zone: 'machines',
     muscles: { primary: ['Quads'], secondary: [] },
     steps: [
       'Line your knees up with the machine’s pivot point.',
@@ -223,7 +212,7 @@ export const MACHINES = [
     sources: ['spin2016'],
   },
   {
-    id: 'leg-curl', name: 'Leg Curl', short: 'LC', zone: 'machines', x: 470, y: 260,
+    id: 'leg-curl', name: 'Leg Curl', short: 'LC', zone: 'machines',
     muscles: { primary: ['Hamstrings'], secondary: [] },
     steps: [
       'Line your knees up with the pivot; pad just above your heels.',
@@ -237,7 +226,7 @@ export const MACHINES = [
     sources: ['ddfc'],
   },
   {
-    id: 'hip-abductor', name: 'Hip Ab/Adductor', mapLabel: 'Hip Ab/Add', short: 'HA', zone: 'machines', x: 580, y: 260,
+    id: 'hip-abductor', name: 'Hip Ab/Adductor', short: 'HA', zone: 'machines',
     muscles: { primary: ['Hips', 'Glutes'], secondary: [] },
     steps: [
       'Set the pads outside your knees for abduction (push out) or inside for adduction (squeeze in).',
@@ -251,7 +240,7 @@ export const MACHINES = [
     sources: ['spin2016'],
   },
   {
-    id: 'lat-pulldown', name: 'Lat Pulldown', short: 'PD', zone: 'machines', x: 250, y: 370,
+    id: 'lat-pulldown', name: 'Lat Pulldown', short: 'PD', zone: 'machines',
     muscles: { primary: ['Lats', 'Back'], secondary: ['Arms', 'Shoulders'] },
     steps: [
       'Adjust the thigh pad snugly; grip slightly wider than shoulders.',
@@ -265,7 +254,7 @@ export const MACHINES = [
     sources: ['spin2016'],
   },
   {
-    id: 'seated-row', name: 'Seated Row', short: 'SR', zone: 'machines', x: 360, y: 370,
+    id: 'seated-row', name: 'Seated Row', short: 'SR', zone: 'machines',
     muscles: { primary: ['Back', 'Lats'], secondary: ['Arms', 'Shoulders'] },
     steps: [
       'Sit tall with feet braced and knees slightly bent.',
@@ -279,7 +268,7 @@ export const MACHINES = [
     sources: ['spin2016'],
   },
   {
-    id: 'chest-press', name: 'Chest Press', short: 'CP', zone: 'machines', x: 470, y: 370,
+    id: 'chest-press', name: 'Chest Press', short: 'CP', zone: 'machines',
     muscles: { primary: ['Chest'], secondary: ['Arms', 'Shoulders'] },
     steps: [
       'Adjust the seat so handles are at mid-chest height.',
@@ -293,7 +282,7 @@ export const MACHINES = [
     sources: ['spin2016'],
   },
   {
-    id: 'shoulder-press', name: 'Shoulder Press', mapLabel: 'Shoulder Pr.', short: 'SP', zone: 'machines', x: 580, y: 370,
+    id: 'shoulder-press', name: 'Shoulder Press', short: 'SP', zone: 'machines',
     muscles: { primary: ['Shoulders'], secondary: ['Arms', 'Chest'] },
     steps: [
       'Set the seat so handles start at shoulder height.',
@@ -307,7 +296,7 @@ export const MACHINES = [
     sources: ['spin2016'],
   },
   {
-    id: 'plate-loaded', name: 'Plate-Loaded Machines', mapLabel: 'Plate-Loaded', short: 'PL', zone: 'machines', x: 250, y: 480,
+    id: 'plate-loaded', name: 'Plate-Loaded Machines', short: 'PL', zone: 'machines',
     muscles: { primary: ['Chest', 'Back', 'Quads'], secondary: ['Shoulders', 'Arms', 'Glutes'] },
     steps: [
       'Load plates evenly on both sides (iso-lateral machines move each arm separately).',
@@ -322,7 +311,7 @@ export const MACHINES = [
     sources: ['ddfc', 'arch'],
   },
   {
-    id: 'cable-station', name: 'Cable Station', mapLabel: 'Cables', short: 'CB', zone: 'machines', x: 360, y: 480,
+    id: 'cable-station', name: 'Cable Station', short: 'CB', zone: 'machines',
     muscles: { primary: ['Chest', 'Back', 'Shoulders'], secondary: ['Arms', 'Core'] },
     steps: [
       'Set the pulley height for your exercise and clip on a handle or rope.',
@@ -336,7 +325,7 @@ export const MACHINES = [
     sources: ['spin2016'],
   },
   {
-    id: 'cybex-total-access', name: 'Accessible Machines (Cybex Total Access)', mapLabel: 'Cybex Access', short: 'TA', zone: 'machines', x: 470, y: 480,
+    id: 'cybex-total-access', name: 'Accessible Machines (Cybex Total Access)', short: 'TA', zone: 'machines',
     muscles: { primary: ['Chest', 'Back', 'Shoulders'], secondary: ['Arms'] },
     steps: [
       'Swing the seat away to roll a wheelchair into position, or use it seated.',
@@ -350,7 +339,7 @@ export const MACHINES = [
     sources: ['ddfc'],
   },
   {
-    id: 'ube', name: 'Upper Body Ergometer', mapLabel: 'Arm Ergometer', short: 'UB', zone: 'machines', x: 580, y: 480,
+    id: 'ube', name: 'Upper Body Ergometer', short: 'UB', zone: 'machines',
     muscles: { primary: ['Cardio', 'Arms', 'Shoulders'], secondary: ['Back', 'Core'] },
     steps: [
       'Adjust the seat so the crank is about shoulder height (or roll a wheelchair in).',
@@ -366,7 +355,7 @@ export const MACHINES = [
 
   // ---------------- RACKS ----------------
   {
-    id: 'half-racks', name: 'Half Racks (×9)', short: 'HR', zone: 'racks', x: 820, y: 300,
+    id: 'half-racks', name: 'Half Racks (×9)', short: 'HR', zone: 'racks',
     muscles: { primary: ['Quads', 'Glutes', 'Full Body'], secondary: ['Hamstrings', 'Core', 'Back'] },
     steps: [
       'Set J-hooks just below shoulder height and safety arms just below your bottom position.',
@@ -384,7 +373,7 @@ export const MACHINES = [
     sources: ['ribbon', 'spin2024', 'spin2023', 'policies', 'photos'],
   },
   {
-    id: 'deadlift', name: 'Platforms / Deadlift', mapLabel: 'Deadlift Platforms', short: 'DL', zone: 'racks', x: 820, y: 450,
+    id: 'deadlift', name: 'Platforms / Deadlift', short: 'DL', zone: 'racks',
     muscles: { primary: ['Hamstrings', 'Glutes', 'Back'], secondary: ['Quads', 'Core', 'Arms'] },
     steps: [
       'Use the inlay platform in front of a rack; load bumper plates.',
@@ -401,7 +390,7 @@ export const MACHINES = [
 
   // ---------------- COZY CORNER ----------------
   {
-    id: 'nautilus-one', name: 'Nautilus One Circuit', mapLabel: 'Nautilus One', short: 'N1', zone: 'cozy', x: 80, y: 660,
+    id: 'nautilus-one', name: 'Nautilus One Circuit', short: 'N1', zone: 'cozy',
     muscles: { primary: ['Full Body'], secondary: ['Chest', 'Back', 'Quads', 'Shoulders'] },
     steps: [
       'Go machine to machine in order around the circuit.',
@@ -416,7 +405,7 @@ export const MACHINES = [
     sources: ['ddfc'],
   },
   {
-    id: 'light-dumbbells', name: 'Light Dumbbells', mapLabel: 'Light DBs', short: 'LD', zone: 'cozy', x: 190, y: 660,
+    id: 'light-dumbbells', name: 'Light Dumbbells', short: 'LD', zone: 'cozy',
     muscles: { primary: ['Arms', 'Shoulders'], secondary: ['Chest', 'Back'] },
     steps: [
       'Pick a pair you can control for 10–15 reps.',
@@ -430,7 +419,7 @@ export const MACHINES = [
     sources: ['ddfc'],
   },
   {
-    id: 'stretch', name: 'Stretch Area', short: 'SA', zone: 'cozy', x: 135, y: 765,
+    id: 'stretch', name: 'Stretch Area', short: 'SA', zone: 'cozy',
     muscles: { primary: ['Mobility'], secondary: ['Hamstrings', 'Hips', 'Back'] },
     steps: [
       'Grab a mat and give yourself space.',
@@ -447,7 +436,7 @@ export const MACHINES = [
 
   // ---------------- PLAYGROUND ----------------
   {
-    id: 'synergy-360', name: 'Synergy 360 Rig', mapLabel: 'Synergy 360', short: 'S3', zone: 'playground', x: 320, y: 660,
+    id: 'synergy-360', name: 'Synergy 360 Rig', short: 'S3', zone: 'playground',
     muscles: { primary: ['Full Body', 'Core'], secondary: ['Shoulders', 'Back', 'Quads'] },
     steps: [
       'Pick a station: pull-up bars, cable/rope pulleys, suspension anchors, boxes, etc.',
@@ -461,7 +450,7 @@ export const MACHINES = [
     sources: ['ddfc', 'arch'],
   },
   {
-    id: 'trx', name: 'TRX Suspension', short: 'TX', zone: 'playground', x: 410, y: 765,
+    id: 'trx', name: 'TRX Suspension', short: 'TX', zone: 'playground',
     muscles: { primary: ['Core', 'Full Body'], secondary: ['Chest', 'Back', 'Shoulders'] },
     steps: [
       'Check the anchor is secure and adjust both straps to the same length.',
@@ -477,7 +466,7 @@ export const MACHINES = [
 
   // ---------------- FREE WEIGHTS ----------------
   {
-    id: 'dumbbells', name: 'Main Dumbbell Area', mapLabel: 'Dumbbells', short: 'DB', zone: 'free-weights', x: 560, y: 660,
+    id: 'dumbbells', name: 'Main Dumbbell Area', short: 'DB', zone: 'free-weights',
     muscles: { primary: ['Shoulders', 'Chest', 'Arms'], secondary: ['Back', 'Core', 'Quads'] },
     steps: [
       'Pick weights you can control for 8–12 good reps.',
@@ -491,7 +480,7 @@ export const MACHINES = [
     sources: ['ddfc', 'ribbon', 'policies'],
   },
   {
-    id: 'bench-press', name: 'Barbell Benches', mapLabel: 'Benches', short: 'BP', zone: 'free-weights', x: 560, y: 765,
+    id: 'bench-press', name: 'Barbell Benches', short: 'BP', zone: 'free-weights',
     muscles: { primary: ['Chest'], secondary: ['Arms', 'Shoulders'] },
     steps: [
       'Eyes under the bar, feet flat, shoulder blades squeezed.',
@@ -507,7 +496,7 @@ export const MACHINES = [
 
   // ---------------- CROSSPREY-FIT ----------------
   {
-    id: 'monkey-bars', name: 'Monkey Bars', short: 'MB', zone: 'crossprey', x: 715, y: 660,
+    id: 'monkey-bars', name: 'Monkey Bars', short: 'MB', zone: 'crossprey',
     muscles: { primary: ['Lats', 'Arms', 'Core'], secondary: ['Shoulders', 'Back'] },
     steps: [
       'Start with dead hangs and active hangs (shoulders pulled down).',
@@ -521,7 +510,7 @@ export const MACHINES = [
     sources: ['ddfc', 'policies'],
   },
   {
-    id: 'olympic-platform', name: 'Olympic Platforms (×2)', mapLabel: 'Oly Platforms', short: 'OP', zone: 'crossprey', x: 820, y: 660,
+    id: 'olympic-platform', name: 'Olympic Platforms (×2)', short: 'OP', zone: 'crossprey',
     muscles: { primary: ['Full Body', 'Quads', 'Glutes'], secondary: ['Back', 'Shoulders', 'Core'] },
     steps: [
       'Use bumper plates and an empty platform.',
@@ -535,7 +524,7 @@ export const MACHINES = [
     sources: ['ddfc', 'policies'],
   },
   {
-    id: 'slam-wall', name: 'Slam Wall', short: 'SW', zone: 'crossprey', x: 925, y: 660,
+    id: 'slam-wall', name: 'Slam Wall', short: 'SW', zone: 'crossprey',
     muscles: { primary: ['Full Body', 'Core'], secondary: ['Shoulders', 'Lats'] },
     steps: [
       'Hold a slam ball at chest height, feet shoulder-width.',
@@ -549,7 +538,7 @@ export const MACHINES = [
     sources: ['ddfc', 'policies'],
   },
   {
-    id: 'air-bike', name: 'Air Bikes', short: 'AB', zone: 'crossprey', x: 820, y: 765,
+    id: 'air-bike', name: 'Air Bikes', short: 'AB', zone: 'crossprey',
     muscles: { primary: ['Cardio', 'Full Body'], secondary: ['Quads', 'Arms'] },
     steps: [
       'Adjust the seat like a normal bike.',

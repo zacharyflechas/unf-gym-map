@@ -38,7 +38,7 @@ await shot('02-desktop-search-glutes.png', desktop, async (p) => {
   await p.getByRole('button', { name: 'Glutes', exact: true }).click();
 });
 await shot('03-desktop-detail-half-racks.png', desktop, async (p) => {
-  await p.locator('g.marker[aria-label="Half Racks (×9)"]').click();
+  await p.locator('g.item[aria-label="Rack r1"]').click();
   await p.waitForSelector('.detail iframe');
   await p.waitForTimeout(2500);
 });
@@ -59,7 +59,7 @@ await shot('06-mobile-search-fallback-nautilus.png', phone, async (p) => {
   const page = await ctx.newPage();
   await page.goto(BASE + '#cozy-corner-none', { waitUntil: 'networkidle' });
   await page.waitForTimeout(2500);
-  await page.locator('g.marker[aria-label="Nautilus One Circuit"]').click();
+  await page.locator('.machine-row', { hasText: 'Nautilus One Circuit' }).click();
   await page.waitForTimeout(1500);
   await page.locator('.draft-info').scrollIntoViewIfNeeded();
   await page.waitForTimeout(500);
