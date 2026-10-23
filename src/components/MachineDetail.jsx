@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { zoneName } from '../matching.js';
-import { SOURCES, FACILITY } from '../data/gymData.js';
+import MuscleDiagram from './MuscleDiagram.jsx';
+import VideoCard from './VideoCard.jsx';
 
-const Conf = ({ level }) => <span className={`conf conf-${level}`}>{level}</span>;
+const NO_REGION = ['Cardio', 'Mobility']; // muscles the body diagram can't show; listed as text
 
 export default function MachineDetail({ machine, closing = false, onClose }) {
   const closeRef = useRef(null);
@@ -18,20 +19,14 @@ export default function MachineDetail({ machine, closing = false, onClose }) {
     };
   }, [machine.id, onClose]);
 
-  const searchQuery = machine.youtubeSearch || `how to use ${machine.name} proper form`;
-  const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
+  const { primary, secondary } = machine.muscles;
+  const extras = [...primary, ...secondary].filter((m) => NO_REGION.includes(m));
 
   return (
     <div className={`overlay ${closing ? 'is-closing' : ''}`} onClick={onClose}>
-      <aside
-        className="detail"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="detail-title"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="detail" role="dialog" aria-modal="true" aria-labelledby="detail-title" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-handle" aria-hidden="true" />
-        <header className="detail-header">
+        <div className="detail-header">
           <div>
             <p className="detail-zone">{zoneName(machine.zone)}</p>
             <h2 id="detail-title">{machine.name}</h2>
@@ -39,102 +34,71 @@ export default function MachineDetail({ machine, closing = false, onClose }) {
           <button ref={closeRef} className="close-btn" onClick={onClose} aria-label="Close details">
             ✕
           </button>
-        </header>
+        </div>
 
         <div className="detail-body">
-          <div className="muscles">
-            <div>
-              <h3>Primary</h3>
-              <ul className="tag-list">
-                {machine.muscles.primary.map((m) => (
-                  <li key={m} className="tag tag-primary">
-                    {m}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            {machine.muscles.secondary.length > 0 && (
-              <div>
-                <h3>Secondary</h3>
+          <section className="card" aria-labelledby="muscles-title">
+            <h3 id="muscles-title">Muscles worked</h3>
+            <div className="muscle-card">
+              <MuscleDiagram muscles={machine.muscles} />
+              <div className="muscle-lists">
+                <h4>
+                  <span className="key key-primary" aria-hidden="true" /> Primary
+                </h4>
                 <ul className="tag-list">
-                  {machine.muscles.secondary.map((m) => (
-                    <li key={m} className="tag">
+                  {primary.map((m) => (
+                    <li key={m} className="tag tag-primary">
                       {m}
                     </li>
                   ))}
                 </ul>
+                {secondary.length > 0 && (
+                  <>
+                    <h4>
+                      <span className="key key-secondary" aria-hidden="true" /> Secondary
+                    </h4>
+                    <ul className="tag-list">
+                      {secondary.map((m) => (
+                        <li key={m} className="tag">
+                          {m}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                {extras.length > 0 && <p className="muscle-note">Also: {extras.join(', ')} (not shown on the body).</p>}
               </div>
-            )}
-          </div>
-
-          <h3>Video tutorial</h3>
-          {machine.youtubeId ? (
-            <div className="video">
-              <iframe
-                src={`https://www.youtube-nocookie.com/embed/${machine.youtubeId}?rel=0`}
-                title={`${machine.name} tutorial video`}
-                loading="lazy"
-                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-              />
             </div>
-          ) : (
-            <a className="yt-search" href={searchUrl} target="_blank" rel="noopener noreferrer">
-              ▶ Search YouTube for a “{machine.name}” tutorial
-            </a>
-          )}
+          </section>
 
-          <h3>How to</h3>
-          <ol className="steps">
-            {machine.steps.map((s, i) => (
-              <li key={i}>{s}</li>
-            ))}
-          </ol>
+          {machine.video && <VideoCard key={machine.id} video={machine.video} machineName={machine.name} />}
+
+          <section className="card" aria-labelledby="steps-title">
+            <h3 id="steps-title">How to</h3>
+            <ol className="steps">
+              {machine.steps.map((s, i) => (
+                <li key={i}>{s}</li>
+              ))}
+            </ol>
+          </section>
 
           {machine.tips?.length > 0 && (
-            <>
-              <h3>Tips</h3>
+            <section className="card" aria-labelledby="tips-title">
+              <h3 id="tips-title">Tips</h3>
               <ul className="tips">
                 {machine.tips.map((t, i) => (
                   <li key={i}>{t}</li>
                 ))}
               </ul>
-            </>
-          )}
-          {machine.confidence && (
-            <section className="draft-info" aria-label="About this draft entry">
-              <h3>About this draft entry</h3>
-              <p>
-                Exists at the DDFC: <Conf level={machine.confidence} /> · Location on map:{' '}
-                <Conf level={machine.locationConfidence} />
-              </p>
-              {machine.note && <p>{machine.note}</p>}
-              {machine.sources?.length > 0 && (
-                <ul>
-                  {machine.sources.map((k) =>
-                    SOURCES[k] ? (
-                      <li key={k}>
-                        <a href={SOURCES[k].url} target="_blank" rel="noopener noreferrer">
-                          {SOURCES[k].title}
-                        </a>
-                      </li>
-                    ) : null,
-                  )}
-                </ul>
-              )}
-              <p>
-                <a href={FACILITY.feedbackUrl} target="_blank" rel="noopener noreferrer">
-                  Know where this really is? Help us fix it →
-                </a>
-              </p>
             </section>
           )}
+
           <p className="disclaimer">
-            General guidance only. Start light, and ask Rec Center staff if you’re unsure how to use a machine.
+            General guidance only. Start light, and ask Rec Center staff if you’re unsure how to use a machine. The map layout is
+            approximate and still being verified.
           </p>
         </div>
-      </aside>
+      </div>
     </div>
   );
 }

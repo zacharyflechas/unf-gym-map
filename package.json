@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "validate": "node scripts/validate-layout.mjs",
+    "test": "node --test scripts/",
+    "prebuild": "node scripts/validate-layout.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "screenshots": "node scripts/screenshot.mjs",

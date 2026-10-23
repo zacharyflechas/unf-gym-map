@@ -20,9 +20,9 @@ export default function ItemDetail({ item, closing = false, onClose }) {
 
   return (
     <div className={`overlay ${closing ? 'is-closing' : ''}`} onClick={onClose}>
-      <aside className="detail" role="dialog" aria-modal="true" aria-labelledby="detail-title" onClick={(e) => e.stopPropagation()}>
+      <div className="detail" role="dialog" aria-modal="true" aria-labelledby="detail-title" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-handle" aria-hidden="true" />
-        <header className="detail-header">
+        <div className="detail-header">
           <div>
             <p className="detail-zone">{item.zone}</p>
             <h2 id="detail-title">{item.name}</h2>
@@ -30,12 +30,14 @@ export default function ItemDetail({ item, closing = false, onClose }) {
           <button ref={closeRef} className="close-btn" onClick={onClose} aria-label="Close details">
             ✕
           </button>
-        </header>
+        </div>
         <div className="detail-body">
-          <p>No how-to info for this item yet.</p>
+          <section className="card">
+            <p>No how-to info for this item yet.</p>
+          </section>
           <p className="disclaimer">The layout is approximate and still being verified, so names and positions may change.</p>
         </div>
-      </aside>
+      </div>
     </div>
   );
 }

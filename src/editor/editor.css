@@ -1,27 +1,34 @@
-/* Styles for the dev-only layout editor (never part of the production build). */
-.editor { display: flex; flex-direction: column; height: 100vh; background: #f5f7fa; }
-.editor-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 14px; background: #0b4f9c; color: #fff; }
-.editor-bar button { padding: 6px 12px; border: 0; border-radius: 6px; font: inherit; cursor: pointer; }
-.editor-bar button.primary { background: #f2b705; font-weight: 700; }
+/* Styles for the dev-only layout editor (never part of the production build).
+   The editor always uses the light theme so the status colors read the same. */
+.editor { color-scheme: light; display: flex; flex-direction: column; height: 100vh; background: var(--color-bg); color: var(--color-text); }
+.editor-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) 14px; padding: 10px 14px; background: var(--color-brand); color: var(--color-on-brand); }
+.editor-bar button { padding: 6px var(--space-3); border: 0; border-radius: 6px; font: inherit; cursor: pointer; background: var(--color-surface); color: var(--color-text); }
+.editor-bar button.primary { background: var(--color-accent); color: var(--color-on-accent); font-weight: 700; }
 .editor-bar button:disabled { opacity: 0.5; cursor: default; }
-.editor-bar .hint { font-size: 0.8rem; opacity: 0.85; }
+.editor-bar .hint { font-size: var(--text-xs); opacity: 0.9; }
+.editor-bar select { font: inherit; padding: 3px var(--space-1); }
+.underlay-bar { background: var(--color-text); padding-top: 6px; padding-bottom: 6px; font-size: var(--text-sm); }
+.small-num { width: 70px; }
+.file-pick { cursor: pointer; text-decoration: underline; }
+.file-pick input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.bad { color: var(--status-guess); font-weight: 700; }
 .editor-main { flex: 1; display: flex; min-height: 0; }
-.editor-map { flex: 1; min-width: 0; background: #fff; touch-action: none; user-select: none; }
-.editor-panel { width: 300px; padding: 14px; overflow-y: auto; background: #fff; border-left: 1px solid #c9d3e0; }
-.editor-panel h2 { margin: 0 0 10px; font-size: 1.1rem; }
-.field { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; font-size: 0.8rem; color: #444; }
-.field input, .field select, .field textarea { font: inherit; font-size: 0.95rem; padding: 5px 6px; }
-.field-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 8px; }
-.field-row input { width: 100%; box-sizing: border-box; }
+.editor-map { flex: 1; min-width: 0; background: var(--color-surface); touch-action: none; user-select: none; }
+.editor-panel { width: 300px; padding: 14px; overflow-y: auto; background: var(--color-surface); border-left: 1px solid var(--color-muted); }
+.editor-panel h2 { margin: 0 0 10px; font-size: var(--text-lg); }
+.field { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; font-size: var(--text-xs); color: var(--color-text-soft); }
+.field input, .field select, .field textarea { font: inherit; font-size: 0.95rem; padding: 5px 6px; color: var(--color-text); }
+.field-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 var(--space-2); }
+.field-row input { width: 100%; }
 
 /* Items colored by status so it's easy to see what still needs checking. */
 .ed-item { cursor: grab; }
 .ed-item rect, .ed-item ellipse { stroke-width: 0.35; fill-opacity: 0.45; }
-.ed-item.status-guess rect, .ed-item.status-guess ellipse { fill: #ef6c00; stroke: #ef6c00; }
-.ed-item.status-sketch rect, .ed-item.status-sketch ellipse { fill: #1565c0; stroke: #1565c0; }
+.ed-item.status-guess rect, .ed-item.status-guess ellipse { fill: var(--status-guess); stroke: var(--status-guess); }
+.ed-item.status-sketch rect, .ed-item.status-sketch ellipse { fill: var(--status-sketch); stroke: var(--status-sketch); }
 .ed-item.status-photo-verified rect, .ed-item.status-photo-verified ellipse,
-.ed-item.status-scan-verified rect, .ed-item.status-scan-verified ellipse { fill: #2e7d32; stroke: #2e7d32; }
-.ed-item.is-selected rect, .ed-item.is-selected ellipse { stroke: #f2b705; stroke-width: 0.9; fill-opacity: 0.75; }
-.ed-num { font-size: 2.2px; font-weight: 700; fill: #000; pointer-events: none; }
-.rotate-arm { stroke: #f2b705; stroke-width: 0.3; }
-.rotate-handle { fill: #f2b705; stroke: #0f1b2d; stroke-width: 0.3; cursor: crosshair; }
+.ed-item.status-scan-verified rect, .ed-item.status-scan-verified ellipse { fill: var(--status-verified); stroke: var(--status-verified); }
+.ed-item.is-selected rect, .ed-item.is-selected ellipse { stroke: var(--color-accent); stroke-width: 0.9; fill-opacity: 0.75; }
+.ed-num { font-size: 2.2px; font-weight: 700; fill: var(--color-text); pointer-events: none; }
+.rotate-arm { stroke: var(--color-accent); stroke-width: 0.3; }
+.rotate-handle { fill: var(--color-accent); stroke: var(--color-text); stroke-width: 0.3; cursor: crosshair; }
