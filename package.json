@@ -9,9 +9,7 @@
     "test": "node --test scripts/",
     "prebuild": "node scripts/validate-layout.mjs",
     "build": "vite build",
-    "preview": "vite preview",
-    "screenshots": "node scripts/screenshot.mjs",
-    "demo": "node scripts/record-demo.mjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^19.3.1",
@@ -19,7 +17,6 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.1.2",
-    "playwright-core": "^1.64.1",
     "vite": "^8.3.4"
   }
 }
