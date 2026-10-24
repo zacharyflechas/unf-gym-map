@@ -38,7 +38,15 @@ export default function BaseMap({ base }) {
         <path className="base-track" fillRule="evenodd" d={`M${pts(track.outer)}Z M${pts(track.inner)}Z`} />
       )}
       {stairs.map((s) => (
-        <rect key={s.id} className="base-stair" x={s.x} y={s.y} width={s.width} height={s.height} />
+        <rect
+          key={s.id}
+          className="base-stair"
+          x={s.x}
+          y={s.y}
+          width={s.width}
+          height={s.height}
+          transform={s.rotation ? `rotate(${s.rotation} ${s.x + s.width / 2} ${s.y + s.height / 2})` : undefined}
+        />
       ))}
       {columns.map((c) =>
         c.shape === 'square' ? (
