@@ -35,10 +35,6 @@ a { color: var(--color-brand); }
 .subtitle { margin: var(--space-1) 0 0; opacity: 0.9; font-size: var(--text-sm); }
 .title-block { flex: 1; min-width: 0; }
 
-.theme-toggle { display: flex; border: 1.5px solid currentColor; border-radius: var(--radius-pill); overflow: hidden; }
-.theme-toggle button { min-height: var(--tap); min-width: var(--tap); padding: 0 var(--space-3); border: 0; background: transparent; font-size: var(--text-sm); font-weight: 600; }
-.theme-toggle button[aria-pressed='true'] { background: var(--color-accent); color: var(--color-on-accent); }
-
 .main { padding: var(--space-3) var(--space-3) var(--space-5); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
 
 /* ---------- cards ---------- */
@@ -86,9 +82,9 @@ a { color: var(--color-brand); }
 
 .view-switch { display: flex; justify-content: flex-end; }
 
-/* ---------- legend filter, level toggle ---------- */
+/* ---------- legend filter ---------- */
 .legend-filter { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
-.zone-chip, .level-toggle button {
+.zone-chip {
   min-height: var(--tap);
   display: inline-flex;
   align-items: center;
@@ -102,13 +98,12 @@ a { color: var(--color-brand); }
   font-weight: 600;
 }
 .zone-swatch { width: 12px; height: 12px; border-radius: 3px; background: var(--zone-color); }
-.zone-chip[aria-pressed='true'], .level-toggle button[aria-pressed='true'] {
+.zone-chip[aria-pressed='true'] {
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: var(--color-on-accent);
 }
-.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
-.level-toggle { display: flex; gap: var(--space-2); }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--space-2); }
 .dev-errors { padding: var(--space-2) var(--space-3); background: var(--status-guess); color: var(--color-on-accent); font-size: var(--text-sm); }
 
 /* One color per zone group (tokens.css --zone-*), used by the legend swatch and the map items. */
@@ -169,13 +164,10 @@ a { color: var(--color-brand); }
 .item { cursor: pointer; outline: none; }
 .item-hit { fill: transparent; }
 .item-shape { fill: var(--zone-color); stroke: var(--map-item-line); stroke-width: 0.3; }
-.item-icon { display: none; color: var(--map-item-line); pointer-events: none; }
-.show-icons .item-icon { display: inline; }
 .item-glow { fill: none; stroke: var(--color-accent); stroke-width: 1.4; opacity: 0.55; }
 .item:hover .item-shape, .item:focus-visible .item-shape { stroke: var(--color-focus); stroke-width: 0.9; }
 .item.is-match .item-shape { stroke: var(--color-accent); stroke-width: 0.8; }
 .item.is-selected .item-shape { fill: var(--color-accent); stroke: var(--color-text); stroke-width: 0.6; }
-.item.is-selected .item-icon { color: var(--color-on-accent); }
 
 .legend { display: flex; flex-wrap: wrap; gap: 6px var(--space-4); margin: var(--space-2) var(--space-1) 0; font-size: var(--text-xs); color: var(--color-text-soft); }
 .legend strong { color: var(--color-text); }
@@ -272,43 +264,13 @@ a { color: var(--color-brand); }
 .card h4 { margin: var(--space-3) 0 var(--space-2); font-size: var(--text-sm); display: flex; align-items: center; gap: 6px; }
 .card h4:first-child { margin-top: 0; }
 
-/* Muscles card: body diagram + lists */
-.muscle-card { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: var(--space-3); align-items: center; }
-.muscle-diagram { width: 100%; height: auto; }
-.body-neutral, .body-region { fill: var(--color-muted); stroke: var(--color-surface); stroke-width: 1; }
-.body-region.is-secondary { fill: var(--muscle-secondary); }
-.body-region.is-primary { fill: var(--muscle-primary); }
-.body-label { font-size: 11px; font-weight: 700; fill: var(--color-text-soft); }
+/* Muscles card: primary / secondary lists */
 .key { width: 12px; height: 12px; border-radius: 3px; }
 .key-primary { background: var(--muscle-primary); }
 .key-secondary { background: var(--muscle-secondary); }
-.muscle-note { margin: var(--space-3) 0 0; font-size: var(--text-xs); color: var(--color-text-soft); }
 .tag-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
 .tag { background: var(--color-brand-tint); color: var(--color-text); border-radius: var(--radius-pill); padding: var(--space-1) 10px; font-size: var(--text-sm); font-weight: 600; }
 .tag-primary { background: var(--muscle-primary); color: var(--color-on-brand); }
-
-/* Video card: nothing loads from YouTube until the button is pressed */
-.video { position: relative; aspect-ratio: 16 / 9; background: var(--color-note-bg); border-radius: var(--radius-md); overflow: hidden; }
-.video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-.video-start {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border: 0;
-  background: var(--color-note-bg);
-  color: var(--color-note-text);
-  text-align: left;
-}
-.play-icon { flex: none; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--color-brand); }
-.play-icon svg { width: 28px; height: 28px; fill: var(--color-on-brand); }
-.video-text { display: grid; gap: 2px; }
-.video-text small { font-size: var(--text-xs); opacity: 0.9; }
-.coach-badge { padding: 2px var(--space-2); border-radius: var(--radius-pill); background: var(--color-accent); color: var(--color-on-accent); letter-spacing: 0.02em; text-transform: none; }
-.cues { margin: 0; padding-left: 1.3em; line-height: 1.5; }
 
 .steps, .tips { margin: 0; padding-left: 1.3em; line-height: 1.5; }
 .steps li, .tips li { margin-bottom: 6px; }
@@ -321,7 +283,6 @@ a { color: var(--color-brand); }
   .main { padding: 10px var(--space-2) 20px; gap: 10px; }
   .legend-filter { flex-wrap: nowrap; overflow-x: auto; padding-bottom: var(--space-1); scrollbar-width: none; }
   .zone-chip { flex: none; }
-  .theme-toggle button { padding: 0 var(--space-2); }
   .gym-map { aspect-ratio: 3 / 2; } /* phones: taller than the floor, so there's room to pan */
   .machine-list { grid-template-columns: 1fr; }
 

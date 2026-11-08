@@ -1,15 +1,15 @@
 /**
- * DEV-ONLY layout editor. Opened with ?edit=1 while running `npm run dev` (add &level=3f for the track).
+ * DEV-ONLY layout editor. Opened with ?edit=1 while running `npm run dev`.
  * It is loaded through a dynamic import in main.jsx behind import.meta.env.DEV, so it is never
  * part of the production build (the build check greps dist/ for LAYOUT_EDITOR_MARKER).
  *
- * Workflow: move/label items here → Export JSON → replace src/data/layout-<level>.json →
+ * Workflow: move/label items here → Export JSON → replace src/data/layout-2f.json →
  * `npm run validate` → commit / open a PR. See README → "Updating the layout".
  */
 import { useEffect, useRef, useState } from 'react';
 import { MACHINES } from '../data/gymData.js';
 import BaseMap from '../components/BaseMap.jsx';
-import { LEVELS, levelById } from '../levels.js';
+import { LEVEL as level } from '../levels.js';
 import { viewBoxOf, itemTransform } from '../layout.js';
 import { FORMAT_VERSION, SOURCE_VALUES, STATUS_VALUES, validateLayout } from '../layoutSchema.js';
 import { KNOWN_ZONES } from '../legend.js';
@@ -33,7 +33,7 @@ const MACHINE_IDS = MACHINES.map((m) => m.id);
 const round1 = (n) => Math.round(n * 10) / 10;
 const unique = (values) => [...new Set(values.filter(Boolean))].sort();
 const today = () => new Date().toISOString().slice(0, 10);
-const storageKey = (levelId) => `layout-${levelId}-draft`; // edits are kept in localStorage so a reload doesn't lose them
+const STORAGE_KEY = `layout-${level.id}-draft`; // edits are kept in localStorage so a reload doesn't lose them
 
 /** Turn a pointer position (screen pixels) into map coordinates (feet) using the SVG's own transform. */
 function toFeet(svg, event) {
@@ -43,12 +43,12 @@ function toFeet(svg, event) {
   return point.matrixTransform(svg.getScreenCTM().inverse());
 }
 
-function loadItems(level) {
-  const saved = localStorage.getItem(storageKey(level.id));
+function loadItems() {
+  const saved = localStorage.getItem(STORAGE_KEY);
   return saved ? JSON.parse(saved) : level.items;
 }
 
-/** Next free id with the level's prefix, e.g. "i172" when the highest id is "i171". */
+/** Next free id with the given prefix, e.g. "i172" when the highest id is "i171". */
 function nextId(items, prefix) {
   const numbers = items.map((it) => Number(it.id.replace(/\D/g, '')) || 0);
   return `${prefix}${String(Math.max(0, ...numbers) + 1).padStart(3, '0')}`;
@@ -69,11 +69,9 @@ function Field({ label, children }) {
 }
 
 export default function LayoutEditor() {
-  const [levelId, setLevelId] = useState(() => levelById(new URLSearchParams(window.location.search).get('level')).id);
-  const level = levelById(levelId);
   const view = level.base.view;
 
-  const [items, setItems] = useState(() => loadItems(level));
+  const [items, setItems] = useState(loadItems);
   const [source, setSource] = useState(level.meta.source ?? 'sketch');
   const [selectedId, setSelectedId] = useState(null);
 
@@ -94,8 +92,8 @@ export default function LayoutEditor() {
   const check = validateLayout({ meta: level.meta, items }, { machineIds: MACHINE_IDS, base: level.base, knownZones: KNOWN_ZONES });
 
   useEffect(() => {
-    localStorage.setItem(storageKey(levelId), JSON.stringify(items));
-  }, [items, levelId]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }, [items]);
 
   // Read the underlay image's real size so its height in feet keeps the right proportions.
   const underlayUrl = underlay?.url;
@@ -105,17 +103,6 @@ export default function LayoutEditor() {
     img.onload = () => setAspect(img.naturalHeight / img.naturalWidth);
     img.src = underlayUrl;
   }, [underlayUrl]);
-
-  function switchLevel(id) {
-    const next = levelById(id);
-    setLevelId(next.id);
-    setItems(loadItems(next));
-    setSource(next.meta.source ?? 'sketch');
-    setSelectedId(null);
-    const url = new URL(window.location.href);
-    url.searchParams.set('level', next.id);
-    window.history.replaceState(null, '', url);
-  }
 
   function chooseDevImage(name) {
     if (!name) return setUnderlay(null);
@@ -189,7 +176,7 @@ export default function LayoutEditor() {
   // ---------- toolbar actions ----------
   function addItem() {
     const item = {
-      id: nextId(items, level.id === '2f' ? 'i' : 't'),
+      id: nextId(items, 'i'),
       name: 'New item',
       type: 'machine',
       zone: selected?.zone ?? '',
@@ -217,7 +204,7 @@ export default function LayoutEditor() {
     setSelectedId(null);
   }
 
-  /** Download the current layout as layout-<level>.json, with a meta block and today's date. */
+  /** Download the current layout as layout-2f.json, with a meta block and today's date. */
   function exportJson() {
     if (check.errors.length > 0 && !window.confirm(`${check.errors.length} problem(s):\n\n${check.errors.join('\n')}\n\nExport anyway?`)) {
       return;
@@ -238,13 +225,6 @@ export default function LayoutEditor() {
     <div className="editor" data-marker={LAYOUT_EDITOR_MARKER}>
       <header className="editor-bar">
         <strong>Layout editor (dev only)</strong>
-        <select value={levelId} onChange={(e) => switchLevel(e.target.value)} aria-label="Level">
-          {LEVELS.map((l) => (
-            <option key={l.id} value={l.id}>
-              {l.name}
-            </option>
-          ))}
-        </select>
         <button onClick={addItem}>Add item</button>
         <button onClick={deleteSelected} disabled={!selected}>
           Delete item
