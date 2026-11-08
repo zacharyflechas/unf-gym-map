@@ -1,12 +1,10 @@
 import { memo, useCallback, useEffect, useRef } from 'react';
 import BaseMap from './BaseMap.jsx';
-import { MapIconDefs, iconFor } from './MapIcons.jsx';
 import { itemTransform, zoneLabels } from '../layout.js';
 import { legendGroupOf } from '../legend.js';
 import { usePanZoom } from '../usePanZoom.js';
 
 const LABEL_PX = 11; // zone labels stay this size on screen at every zoom
-const ICON_MIN_SCALE = 3; // show machine icons once a foot is at least 3 px on screen
 const FOCUS_ZOOM = 3; // zoom (× whole-floor view) when a machine is tapped
 const DRAWER_PX = 460; // desktop detail drawer width (see .detail in styles.css)
 
@@ -40,8 +38,6 @@ const Items = memo(function Items({ items, matchedIds, filtering, selectedIds, o
     const w = item.width;
     const d = item.depth;
     const round = item.type === 'round-item';
-    const icon = iconFor(item.type);
-    const iconSize = Math.min(w, d) * 0.8;
     return (
       <g
         key={item.id}
@@ -69,10 +65,6 @@ const Items = memo(function Items({ items, matchedIds, filtering, selectedIds, o
           <ellipse className="item-shape" rx={w / 2} ry={d / 2} />
         ) : (
           <rect className="item-shape" x={-w / 2} y={-d / 2} width={w} height={d} rx="0.5" />
-        )}
-        {icon && (
-          // counter-rotated so the icon stays upright
-          <use className="item-icon" href={`#icon-${icon}`} x={-iconSize / 2} y={-iconSize / 2} width={iconSize} height={iconSize} transform={`rotate(${-item.rotation})`} />
         )}
       </g>
     );
@@ -124,7 +116,7 @@ export default function GymMap({ level, matchedIds, filtering, selectedIds, focu
     <div className="map-frame">
       <svg
         ref={pz.svgRef}
-        className={`gym-map ${pz.scale >= ICON_MIN_SCALE ? 'show-icons' : ''}`}
+        className="gym-map"
         viewBox={pz.viewBox}
         style={{ '--map-aspect': `${view.width} / ${view.height}` }}
         tabIndex={0}
@@ -132,7 +124,6 @@ export default function GymMap({ level, matchedIds, filtering, selectedIds, focu
         aria-label={`${level.name} map. Arrow keys pan, plus and minus zoom, 0 resets. Tab to reach each machine.`}
         {...pz.handlers}
       >
-        <MapIconDefs />
         <BaseMap base={level.base} />
         <Items items={level.items} matchedIds={matchedIds} filtering={filtering} selectedIds={selectedIds} onTap={onTap} />
         {labels.map((l) => (
