@@ -80,8 +80,8 @@ const Items = memo(function Items({ items, matchedIds, filtering, selectedIds, o
 });
 
 /**
- * Public floor map with pan & zoom. Everything is in feet: the base map comes from base-<level>.json
- * and each item from layout-<level>.json, drawn at its real size and angle.
+ * Public floor map with pan & zoom. Everything is in feet: the base map comes from base-2f.json
+ * and each item from layout-2f.json, drawn at its real size and angle.
  */
 export default function GymMap({ level, matchedIds, filtering, selectedIds, focusItem, onSelect }) {
   const pz = usePanZoom(level.base.view);

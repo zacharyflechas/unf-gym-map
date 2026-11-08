@@ -3,7 +3,7 @@ import { MACHINES, FACILITY } from './data/gymData.js';
 import { zoneName } from './matching.js';
 import { applyFilters, matchSummary } from './filters.js';
 import { LEGEND, legendGroupOf } from './legend.js';
-import { LEVELS, LAYOUT_ERRORS, levelById } from './levels.js';
+import { LEVEL as level, LAYOUT_ERRORS } from './levels.js';
 import GymMap from './components/GymMap.jsx';
 import MachineDetail from './components/MachineDetail.jsx';
 import ItemDetail from './components/ItemDetail.jsx';
@@ -15,43 +15,38 @@ const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce
 const isNarrow = () => window.matchMedia?.('(max-width: 700px)').matches;
 const machineById = (id) => MACHINES.find((m) => m.id === id) ?? null;
 
-// URL: ?level=3f picks the floor; #<id> holds the open item (e.g. #i131) or machine (e.g. #treadmill).
-const levelFromUrl = () => levelById(new URLSearchParams(window.location.search).get('level'));
-const idFromHash = (level) => {
+// URL: #<id> holds the open item (e.g. #i131) or machine (e.g. #treadmill).
+const idFromHash = () => {
   const id = decodeURIComponent(window.location.hash.replace(/^#/, ''));
   return MACHINES.some((m) => m.id === id) || level.items.some((it) => it.id === id) ? id : null;
 };
 
+const writeUrl = (id) => window.history.replaceState(null, '', `${window.location.pathname}${id ? `#${id}` : ''}`);
+
 export default function App() {
-  const [level, setLevel] = useState(levelFromUrl);
   const [query, setQuery] = useState('');
   const [zoneId, setZoneId] = useState(null); // tapped legend group, or null
   const [view, setView] = useState('map'); // 'map' or 'list'
-  const [selectedId, setSelectedId] = useState(() => idFromHash(levelFromUrl()));
+  const [selectedId, setSelectedId] = useState(idFromHash);
   const [closing, setClosing] = useState(false);
   const mapRef = useRef(null);
   const closeTimer = useRef(null);
 
   // Keep the selection in the URL hash so a machine can be linked / bookmarked (e.g. a QR code on it).
   useEffect(() => {
-    const onHash = () => setSelectedId(idFromHash(level));
+    const onHash = () => setSelectedId(idFromHash());
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
-  }, [level]);
-
-  const writeUrl = (levelId, id) => {
-    const search = levelId === LEVELS[0].id ? '' : `?level=${levelId}`;
-    window.history.replaceState(null, '', `${window.location.pathname}${search}${id ? `#${id}` : ''}`);
-  };
+  }, []);
 
   const select = useCallback(
     (id) => {
       clearTimeout(closeTimer.current);
       setClosing(false);
       setSelectedId(id);
-      writeUrl(level.id, id);
+      writeUrl(id);
     },
-    [level.id],
+    [],
   );
 
   // Play the exit animation (sheet/drawer out, map glides back) before unmounting the panel.
@@ -63,16 +58,9 @@ export default function App() {
   }, [select]);
   useEffect(() => () => clearTimeout(closeTimer.current), []);
 
-  function switchLevel(next) {
-    setLevel(next);
-    setZoneId(null);
-    setSelectedId(null);
-    writeUrl(next.id, null);
-  }
-
   const { filtering, itemIds, machineList } = useMemo(
     () => applyFilters({ items: level.items, machines: MACHINES, query, zoneId }),
-    [level, query, zoneId],
+    [query, zoneId],
   );
   const zones = LEGEND.filter((g) => level.items.some((it) => legendGroupOf(it).id === g.id));
   const zoneLabel = LEGEND.find((g) => g.id === zoneId)?.label ?? null;
@@ -91,7 +79,7 @@ export default function App() {
           .filter((it) => it.id === selectedItem?.id || (selectedMachine && it.machineId === selectedMachine.id))
           .map((it) => it.id),
       ),
-    [level, selectedItem, selectedMachine],
+    [selectedItem, selectedMachine],
   );
   const focusItem = view === 'map' && !closing ? selectedItem : null;
 
@@ -177,13 +165,6 @@ export default function App() {
         </section>
 
         <div className="toolbar">
-          <div className="level-toggle" role="group" aria-label="Floor">
-            {LEVELS.map((l) => (
-              <button key={l.id} aria-pressed={level.id === l.id} onClick={() => switchLevel(l)}>
-                <strong>{l.label}</strong> {l.title}
-              </button>
-            ))}
-          </div>
           <button className="view-btn" aria-pressed={view === 'list'} onClick={() => setView(view === 'map' ? 'list' : 'map')}>
             {view === 'map' ? 'List view' : 'Map view'}
           </button>
@@ -202,7 +183,7 @@ export default function App() {
             <p className="map-hint">Drag to move around · pinch, scroll or use + / − to zoom.</p>
             <p className="legend">
               <span>
-                <strong>Layout approximate, being verified:</strong> {level.id === '2f' ? 'traced from the official floor plan and placed from a student’s sketch.' : 'the track level is a rough placeholder.'}{' '}
+                <strong>Layout approximate, being verified:</strong> traced from the official floor plan and placed from a student’s sketch.{' '}
                 Positions and names may change.
               </span>
               <span>Red = restrooms / staff areas · Striped = stairs · Dots = building columns.</span>

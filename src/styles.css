@@ -86,9 +86,9 @@ a { color: var(--color-brand); }
 
 .view-switch { display: flex; justify-content: flex-end; }
 
-/* ---------- legend filter, level toggle ---------- */
+/* ---------- legend filter ---------- */
 .legend-filter { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
-.zone-chip, .level-toggle button {
+.zone-chip {
   min-height: var(--tap);
   display: inline-flex;
   align-items: center;
@@ -102,13 +102,12 @@ a { color: var(--color-brand); }
   font-weight: 600;
 }
 .zone-swatch { width: 12px; height: 12px; border-radius: 3px; background: var(--zone-color); }
-.zone-chip[aria-pressed='true'], .level-toggle button[aria-pressed='true'] {
+.zone-chip[aria-pressed='true'] {
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: var(--color-on-accent);
 }
-.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
-.level-toggle { display: flex; gap: var(--space-2); }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--space-2); }
 .dev-errors { padding: var(--space-2) var(--space-3); background: var(--status-guess); color: var(--color-on-accent); font-size: var(--text-sm); }
 
 /* One color per zone group (tokens.css --zone-*), used by the legend swatch and the map items. */

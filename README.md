@@ -25,7 +25,7 @@ Other commands: `npm run build` (build the site into `dist/`), `npm run preview`
 
 The editor only works with `npm run dev`. It is never part of the live site.
 
-1. Run `npm run dev` and open http://localhost:5173/?edit=1 (use the level dropdown, or add `&level=3f`, for the 3rd floor).
+1. Run `npm run dev` and open http://localhost:5173/?edit=1.
 2. Drag items to move them. Click an item to change its name, type, zone, status, linked machine, size or notes. Your edits are saved in your browser until you click **Reset**.
 3. Set **Source** (sketch, photos or scan), then click **Export JSON**. This downloads `layout-2f.json`.
 4. Replace `src/data/layout-2f.json` with the downloaded file.
