@@ -267,17 +267,10 @@ a { color: var(--color-brand); }
 .card h4 { margin: var(--space-3) 0 var(--space-2); font-size: var(--text-sm); display: flex; align-items: center; gap: 6px; }
 .card h4:first-child { margin-top: 0; }
 
-/* Muscles card: body diagram + lists */
-.muscle-card { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: var(--space-3); align-items: center; }
-.muscle-diagram { width: 100%; height: auto; }
-.body-neutral, .body-region { fill: var(--color-muted); stroke: var(--color-surface); stroke-width: 1; }
-.body-region.is-secondary { fill: var(--muscle-secondary); }
-.body-region.is-primary { fill: var(--muscle-primary); }
-.body-label { font-size: 11px; font-weight: 700; fill: var(--color-text-soft); }
+/* Muscles card: primary / secondary lists */
 .key { width: 12px; height: 12px; border-radius: 3px; }
 .key-primary { background: var(--muscle-primary); }
 .key-secondary { background: var(--muscle-secondary); }
-.muscle-note { margin: var(--space-3) 0 0; font-size: var(--text-xs); color: var(--color-text-soft); }
 .tag-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
 .tag { background: var(--color-brand-tint); color: var(--color-text); border-radius: var(--radius-pill); padding: var(--space-1) 10px; font-size: var(--text-sm); font-weight: 600; }
 .tag-primary { background: var(--muscle-primary); color: var(--color-on-brand); }

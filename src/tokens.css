@@ -56,7 +56,7 @@
   --zone-stretch: light-dark(#2a7f7a, #6fd0c8);
   --zone-other: light-dark(#6b7785, #8c99a8);
 
-  /* --- muscle diagram --- */
+  /* --- muscle tags (primary / secondary) --- */
   --muscle-primary: light-dark(#0b4f9c, #4c9bff);
   --muscle-secondary: light-dark(#9dbde6, #3b6db3);
 

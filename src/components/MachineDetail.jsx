@@ -1,9 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { zoneName } from '../matching.js';
-import MuscleDiagram from './MuscleDiagram.jsx';
 import VideoCard from './VideoCard.jsx';
-
-const NO_REGION = ['Cardio', 'Mobility']; // muscles the body diagram can't show; listed as text
 
 export default function MachineDetail({ machine, closing = false, onClose }) {
   const closeRef = useRef(null);
@@ -20,7 +17,6 @@ export default function MachineDetail({ machine, closing = false, onClose }) {
   }, [machine.id, onClose]);
 
   const { primary, secondary } = machine.muscles;
-  const extras = [...primary, ...secondary].filter((m) => NO_REGION.includes(m));
 
   return (
     <div className={`overlay ${closing ? 'is-closing' : ''}`} onClick={onClose}>
@@ -39,35 +35,31 @@ export default function MachineDetail({ machine, closing = false, onClose }) {
         <div className="detail-body">
           <section className="card" aria-labelledby="muscles-title">
             <h3 id="muscles-title">Muscles worked</h3>
-            <div className="muscle-card">
-              <MuscleDiagram muscles={machine.muscles} />
-              <div className="muscle-lists">
-                <h4>
-                  <span className="key key-primary" aria-hidden="true" /> Primary
-                </h4>
-                <ul className="tag-list">
-                  {primary.map((m) => (
-                    <li key={m} className="tag tag-primary">
-                      {m}
-                    </li>
-                  ))}
-                </ul>
-                {secondary.length > 0 && (
-                  <>
-                    <h4>
-                      <span className="key key-secondary" aria-hidden="true" /> Secondary
-                    </h4>
-                    <ul className="tag-list">
-                      {secondary.map((m) => (
-                        <li key={m} className="tag">
-                          {m}
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-                {extras.length > 0 && <p className="muscle-note">Also: {extras.join(', ')} (not shown on the body).</p>}
-              </div>
+            <div className="muscle-lists">
+              <h4>
+                <span className="key key-primary" aria-hidden="true" /> Primary
+              </h4>
+              <ul className="tag-list">
+                {primary.map((m) => (
+                  <li key={m} className="tag tag-primary">
+                    {m}
+                  </li>
+                ))}
+              </ul>
+              {secondary.length > 0 && (
+                <>
+                  <h4>
+                    <span className="key key-secondary" aria-hidden="true" /> Secondary
+                  </h4>
+                  <ul className="tag-list">
+                    {secondary.map((m) => (
+                      <li key={m} className="tag">
+                        {m}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
           </section>
 
