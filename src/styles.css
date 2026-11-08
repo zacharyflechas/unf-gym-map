@@ -35,10 +35,6 @@ a { color: var(--color-brand); }
 .subtitle { margin: var(--space-1) 0 0; opacity: 0.9; font-size: var(--text-sm); }
 .title-block { flex: 1; min-width: 0; }
 
-.theme-toggle { display: flex; border: 1.5px solid currentColor; border-radius: var(--radius-pill); overflow: hidden; }
-.theme-toggle button { min-height: var(--tap); min-width: var(--tap); padding: 0 var(--space-3); border: 0; background: transparent; font-size: var(--text-sm); font-weight: 600; }
-.theme-toggle button[aria-pressed='true'] { background: var(--color-accent); color: var(--color-on-accent); }
-
 .main { padding: var(--space-3) var(--space-3) var(--space-5); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
 
 /* ---------- cards ---------- */
@@ -320,7 +316,6 @@ a { color: var(--color-brand); }
   .main { padding: 10px var(--space-2) 20px; gap: 10px; }
   .legend-filter { flex-wrap: nowrap; overflow-x: auto; padding-bottom: var(--space-1); scrollbar-width: none; }
   .zone-chip { flex: none; }
-  .theme-toggle button { padding: 0 var(--space-2); }
   .gym-map { aspect-ratio: 3 / 2; } /* phones: taller than the floor, so there's room to pan */
   .machine-list { grid-template-columns: 1fr; }
 

@@ -7,7 +7,6 @@ import { LEVEL as level, LAYOUT_ERRORS } from './levels.js';
 import GymMap from './components/GymMap.jsx';
 import MachineDetail from './components/MachineDetail.jsx';
 import ItemDetail from './components/ItemDetail.jsx';
-import ThemeToggle from './components/ThemeToggle.jsx';
 
 const CLOSE_MS = 260; // keep in sync with the exit animation in styles.css
 
@@ -120,7 +119,6 @@ export default function App() {
               {FACILITY.campus} · {FACILITY.building}. Tap a machine for muscles worked and how-to steps.
             </p>
           </div>
-          <ThemeToggle />
         </div>
       </header>
 
