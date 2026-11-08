@@ -272,29 +272,6 @@ a { color: var(--color-brand); }
 .tag { background: var(--color-brand-tint); color: var(--color-text); border-radius: var(--radius-pill); padding: var(--space-1) 10px; font-size: var(--text-sm); font-weight: 600; }
 .tag-primary { background: var(--muscle-primary); color: var(--color-on-brand); }
 
-/* Video card: nothing loads from YouTube until the button is pressed */
-.video { position: relative; aspect-ratio: 16 / 9; background: var(--color-note-bg); border-radius: var(--radius-md); overflow: hidden; }
-.video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-.video-start {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border: 0;
-  background: var(--color-note-bg);
-  color: var(--color-note-text);
-  text-align: left;
-}
-.play-icon { flex: none; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--color-brand); }
-.play-icon svg { width: 28px; height: 28px; fill: var(--color-on-brand); }
-.video-text { display: grid; gap: 2px; }
-.video-text small { font-size: var(--text-xs); opacity: 0.9; }
-.coach-badge { padding: 2px var(--space-2); border-radius: var(--radius-pill); background: var(--color-accent); color: var(--color-on-accent); letter-spacing: 0.02em; text-transform: none; }
-.cues { margin: 0; padding-left: 1.3em; line-height: 1.5; }
-
 .steps, .tips { margin: 0; padding-left: 1.3em; line-height: 1.5; }
 .steps li, .tips li { margin-bottom: 6px; }
 .disclaimer { margin: var(--space-1) var(--space-1) 0; font-size: var(--text-xs); color: var(--color-text-soft); }

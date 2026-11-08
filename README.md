@@ -36,7 +36,7 @@ The editor only works with `npm run dev`. It is never part of the live site.
 
 - `src/data/layout-2f.json`: where each machine sits on the map (in feet).
 - `src/data/base-2f.json`: the floor itself (walls, rooms, stairs, columns).
-- `src/data/gymData.js`: what each machine is (muscles, steps, tips, video).
+- `src/data/gymData.js`: what each machine is (muscles, steps, tips).
 - `docs/research/`: research notes and sources.
 
 Pushing to `main` publishes the site automatically with GitHub Actions.

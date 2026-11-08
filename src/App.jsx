@@ -217,7 +217,7 @@ export default function App() {
       </main>
 
       <footer className="footer">
-        Student-made draft · Not affiliated with or endorsed by UNF · Info from public UNF pages, UNF Spinnaker and photos · Videos are third-party YouTube content unless marked Coach Zach.
+        Student-made draft · Not affiliated with or endorsed by UNF · Info from public UNF pages, UNF Spinnaker and photos.
       </footer>
 
       {selectedMachine ? (

@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { zoneName } from '../matching.js';
-import VideoCard from './VideoCard.jsx';
 
 export default function MachineDetail({ machine, closing = false, onClose }) {
   const closeRef = useRef(null);
@@ -62,8 +61,6 @@ export default function MachineDetail({ machine, closing = false, onClose }) {
               )}
             </div>
           </section>
-
-          {machine.video && <VideoCard key={machine.id} video={machine.video} machineName={machine.name} />}
 
           <section className="card" aria-labelledby="steps-title">
             <h3 id="steps-title">How to</h3>
