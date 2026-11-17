@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { zoneName } from '../matching.js';
 import MuscleDiagram from './MuscleDiagram.jsx';
-import VideoCard from './VideoCard.jsx';
 
 const NO_REGION = ['Cardio', 'Mobility']; // muscles the body diagram can't show; listed as text
 
@@ -70,8 +69,6 @@ export default function MachineDetail({ machine, closing = false, onClose }) {
               </div>
             </div>
           </section>
-
-          {machine.video && <VideoCard key={machine.id} video={machine.video} machineName={machine.name} />}
 
           <section className="card" aria-labelledby="steps-title">
             <h3 id="steps-title">How to</h3>

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "validate": "node scripts/validate-layout.mjs",
-    "test": "node --test scripts/",
+    "test": "node --test scripts/*.test.mjs",
     "prebuild": "node scripts/validate-layout.mjs",
     "build": "vite build",
     "preview": "vite preview"

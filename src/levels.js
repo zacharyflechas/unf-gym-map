@@ -1,15 +1,12 @@
 /**
- * The floors ("levels") the map can show. Each level is two data files:
- *   - base-<level>.json   → the floor itself: outline, rooms, stairs, columns… (feet)
- *   - layout-<level>.json → where every piece of equipment sits (feet), edited with the ?edit=1 editor
+ * The floor the map shows (2nd floor only). It is two data files:
+ *   - base-2f.json   → the floor itself: outline, rooms, stairs, columns… (feet)
+ *   - layout-2f.json → where every piece of equipment sits (feet), edited with the ?edit=1 editor
  *
- * To update positions, replace a layout file (see README → "Updating the layout"). No code changes needed.
- * To add a floor, add its two files and one entry below.
+ * To update positions, replace the layout file (see README → "Updating the layout"). No code changes needed.
  */
 import base2f from './data/base-2f.json';
 import layout2f from './data/layout-2f.json';
-import base3f from './data/base-3f.json';
-import layout3f from './data/layout-3f.json';
 import { MACHINES } from './data/gymData.js';
 import { normalizeLayout, validateBase, validateLayout } from './layoutSchema.js';
 import { KNOWN_ZONES } from './legend.js';
@@ -35,10 +32,4 @@ function makeLevel(id, label, title, name, base, rawLayout) {
   return { id, label, title, name, base, meta, items };
 }
 
-export const LEVELS = [
-  makeLevel('2f', '2F', 'Gym', '2nd floor · Gym', base2f, layout2f),
-  makeLevel('3f', '3F', 'Track', '3rd floor · Track', base3f, layout3f),
-];
-
-export const DEFAULT_LEVEL = LEVELS[0];
-export const levelById = (id) => LEVELS.find((l) => l.id === id) ?? DEFAULT_LEVEL;
+export const LEVEL = makeLevel('2f', '2F', 'Gym', '2nd floor · Gym', base2f, layout2f);

@@ -2,8 +2,8 @@
  * DESIGN TOKENS: every color, size, radius and shadow the app uses. Components only use var(--…).
  *
  * Colors: Osprey Navy palette from Spec 02. Each one is light-dark(LIGHT, DARK): the browser picks
- * the value for the active color scheme, which follows the system setting unless the user picked
- * Light or Dark (saved in localStorage, applied as <html data-theme="…">).
+ * the value for the active color scheme, which follows the phone's / computer's light or dark setting
+ * (prefers-color-scheme).
  * Gold (--color-accent) is ONLY for active and matching states.
  */
 :root {
@@ -105,7 +105,3 @@
     );
   }
 }
-
-/* A saved choice overrides the system setting. */
-:root[data-theme='light'] { color-scheme: light; }
-:root[data-theme='dark'] { color-scheme: dark; }

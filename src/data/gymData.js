@@ -1,6 +1,6 @@
 /**
  * ============================================================
- *  GYM DATA — what each machine is (muscles, how-to, video)
+ *  GYM DATA — what each machine is (muscles, how-to)
  * ============================================================
  *
  * WHERE things are does not live here. Positions are in src/data/layout-<level>.json (feet, edited
@@ -11,12 +11,7 @@
  * and docs/unf-draft-findings.md (not shown in the app).
  *
  * ZONES:    { id, name }  (names shown in the list and panel)
- * MACHINES: { id, name, short, zone, muscles: { primary, secondary }, steps, tips, video? }
- *   video (optional) – { youtubeId, source: 'zach' | 'external', title?, cues?: [..] }
- *     Only for machines where form is non-obvious or easy to get wrong (Spec 02 video policy):
- *     racks/squat, bench, cable station, plate-loaded, leg press, lat pulldown, rows, Synergy 360.
- *     source 'zach' shows a "Coach Zach" label and lists his `cues` under the video.
- *     IDs are checked with YouTube oEmbed (HTTP 200). No video → no video card (no search link).
+ * MACHINES: { id, name, short, zone, muscles: { primary, secondary }, steps, tips }
  */
 
 export const FACILITY = {
@@ -107,7 +102,6 @@ export const MACHINES = [
       'Re-engage the safeties before getting out.',
     ],
     tips: ['Keep your lower back on the pad — reduce depth if it rounds.'],
-    video: { youtubeId: 'sp5lOlwj0mI', source: 'external', title: 'Leg Press setup & movements (Matrix Fitness)' },
   },
   {
     id: 'leg-extension', name: 'Leg Extension', short: 'LE', zone: 'machines',
@@ -148,7 +142,6 @@ export const MACHINES = [
       'Let the bar rise slowly until arms are straight.',
     ],
     tips: ['Never pull behind the neck.'],
-    video: { youtubeId: 'SALxEARiMkw', source: 'external', title: 'How to do Lat Pulldowns (ATHLEAN-X)' },
   },
   {
     id: 'seated-row', name: 'Seated Row', short: 'SR', zone: 'machines',
@@ -159,7 +152,6 @@ export const MACHINES = [
       'Extend arms slowly.',
     ],
     tips: ['Don’t rock back and forth.'],
-    video: { youtubeId: 'vwHG9Jfu4sw', source: 'external', title: 'How to do the seated cable row (Max Euceda)' },
   },
   {
     id: 'chest-press', name: 'Chest Press', short: 'CP', zone: 'machines',
@@ -190,8 +182,7 @@ export const MACHINES = [
       'Move through the machine’s arc under control; don’t lock out hard.',
       'Unload plates when finished.',
     ],
-    tips: ['Video shows a Hammer Strength–style chest press; the DDFC’s exact models/brands are unknown.'],
-    video: { youtubeId: 'B3HWtDDKBlY', source: 'external', title: 'Hammer Strength chest press tutorial (Rapid Fitness)' },
+    tips: ['The DDFC’s exact chest press models/brands are unknown.'],
   },
   {
     id: 'cable-station', name: 'Cable Station', short: 'CB', zone: 'machines',
@@ -202,7 +193,6 @@ export const MACHINES = [
       'Move under control — e.g. flys, rows, pushdowns or curls.',
     ],
     tips: ['Return the attachments to their hooks when done.'],
-    video: { youtubeId: '22AFyTaVs5g', source: 'external', title: 'How to use cable machines (Naomi Kong)' },
   },
   {
     id: 'cybex-total-access', name: 'Accessible Machines (Cybex Total Access)', short: 'TA', zone: 'machines',
@@ -239,7 +229,6 @@ export const MACHINES = [
       'Only one barbell per rack; Olympic lifts must be in a rack/platform.',
       'Use collars — strongly recommended by DDFC policy.',
     ],
-    video: { youtubeId: '-bJIpOq-LWk', source: 'external', title: 'How to do a Barbell Back Squat (NASM)' },
   },
   {
     id: 'deadlift', name: 'Platforms / Deadlift', short: 'DL', zone: 'racks',
@@ -293,8 +282,7 @@ export const MACHINES = [
       'Warm up, then do circuits like pull-ups, step-ups, rope work and core moves.',
       'Share stations and put accessories back.',
     ],
-    tips: ['Video is Life Fitness’s product demo of the Synrgy360, not a UNF video.'],
-    video: { youtubeId: 'w6VWeQfn8_0', source: 'external', title: 'Synrgy360 overview (Life Fitness)' },
+    tips: [],
   },
   {
     id: 'trx', name: 'TRX Suspension', short: 'TX', zone: 'playground',
@@ -327,7 +315,6 @@ export const MACHINES = [
       'Press up and re-rack.',
     ],
     tips: ['Ask for a spot when going heavy.', 'No standing barbell shoulder press over a bench-press bench (policy).'],
-    video: { youtubeId: 'gRVjAtPip0Y', source: 'external', title: 'How to Perform Bench Press (Buff Dudes)' },
   },
 
   // ---------------- CROSSPREY-FIT ----------------
